@@ -10,7 +10,7 @@
        to="/"
        active-class="notBackground"
        text
-      > Wydatki</v-btn></v-toolbar-title>
+      > Booksapp</v-btn></v-toolbar-title>
 
       <div class="flex-grow-1"></div>
 
@@ -46,7 +46,7 @@
           >
         <v-list-item-content>
           <v-list-item-title class="title">
-            Wydatki
+            Booksapp
           </v-list-item-title>
         </v-list-item-content>
       </v-list-item>
@@ -123,16 +123,8 @@ export default {
       ]
       if (this.userIsAuthenticated) {
         menuItems = [
-          { icon: 'mdi-calculator', text: 'Podsumowanie', link: '/summary' },
-          { icon: 'mdi-calendar', text: 'Kalendarz', link: '/calendary' },
-          { icon: 'mdi-bank', text: 'Konta', link: '/accounts' },
-          { icon: 'mdi-bank-transfer', text: 'Transakcje', link: '/deals' },
-          { icon: 'mdi-cash-refund', text: 'Dłużnicy', link: '/debtors' },
-          { icon: 'mdi-bank-transfer-out', text: 'Moje długi', link: '/debt' },
-          { icon: 'mdi-folder-open', text: 'Kategorie', link: '/categories' },
-          { icon: 'mdi-chart-bar', text: 'Wykresy', link: '/charts' },
-          { icon: 'mdi-account', text: 'Profil', link: '/profile' },
-          { icon: 'mdi-settings', text: 'Ustawienia', link: '/settings' },
+          { icon: 'mdi-bank-transfer', text: 'Dodaj zamówienie', link: '/orders/add' },
+          { icon: 'mdi-bank-transfer', text: 'Lista zamówień', link: '/orders' },
           { icon: 'mdi-exit-to-app', text: 'Wyloguj', link: '/logout' }
         ]
       }

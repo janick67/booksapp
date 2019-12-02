@@ -6,7 +6,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     orders: [],
-    loading: false,
+    loading: false
     // user: null,
     // error: null
   },
@@ -35,7 +35,7 @@ export default new Vuex.Store({
         commit('setLoadedOrders', res.res)
         commit('setLoading', false)
       })
-    },
+    }
     // signUserUp ({ commit }, payload) {
     //   commit('setLoading', true)
     //   commit('clearError')
@@ -96,9 +96,10 @@ export default new Vuex.Store({
     orders (state) {
       return state.orders
     },
-    // user (state) {
-    //   return state.user
-    // },
+    user (state) {
+      return { user: 'test' }
+      // return state.user
+    },
     loading (state) {
       return state.loading
     },

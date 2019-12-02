@@ -3,9 +3,9 @@
 export default (to, from, next) => {
   next()
 
-  // if (store.getters.user) {
-  //   next()
-  // } else {
-  //   next('/signin')
-  // }
+  if (this.$store.getters.user) {
+    next()
+  } else {
+    next('/signin')
+  }
 }
