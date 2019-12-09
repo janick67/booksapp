@@ -18,8 +18,9 @@
                     <v-btn small color="primary" @click='submit'>Wybierz</v-btn>
                   </v-card-title>
                   <v-data-table
+                    v-if="renderComponent"
                     :headers="headers"
-                    :items="desserts"
+                    :items="books"
                     :search="search"
                   >
                   <template v-slot:item.checkbox="{ item }">
@@ -39,6 +40,7 @@ import { log } from 'util';
       return {
         dialog: false,
         search: '',
+        renderComponent: true,
         headers: [
           {
             text: '',
@@ -46,40 +48,39 @@ import { log } from 'util';
             sortable: false,
             value: 'checkbox'
           },
-          { text: 'Tytuł', value: 'title' },
-          { text: 'Autor', value: 'author' },
-          { text: 'Wydawnictwo', value: 'print' },
+          { text: 'Tytuł', value: 'bo_title' },
+          { text: 'Autor', value: 'bo_author' },
+          { text: 'Wydawnictwo', value: 'bo_printHouse' },
           { text: 'Na magazynie', value: 'stocks' },
         ],
-        desserts: [],
       }
     },
-    created() {
-      this.init()
+    computed:{
+      books(){
+        return this.$store.getters.books;
+      }
     },
     methods:{
-      init() {
-        this.desserts = this.$store.getters.books;
-      },
       submit() {
+        this.$emit('submit',this.books.filter(el => el.checkbox))
         this.close()
-        this.$emit('submit',this.desserts.filter(el => el.checkbox))
       },
       close () {
+        this.books.forEach(el => {
+        delete el.checkbox;        
+        });
+        this.forceRerender()
         this.dialog = false
-        setTimeout(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-        }, 300)
       },
-      save () {
-        if (this.editedIndex > -1) {
-          Object.assign(this.desserts[this.editedIndex], this.editedItem)
-        } else {
-          this.desserts.push(this.editedItem)
-        }
-        this.close()
-      },
+      forceRerender() {
+        // Remove my-component from the DOM
+        this.renderComponent = false;
+        
+        this.$nextTick(() => {
+          // Add the component back in
+          this.renderComponent = true;
+        });
+      }
     },
   }
 </script>

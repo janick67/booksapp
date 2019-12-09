@@ -16,5 +16,6 @@ new Vue({
   render: h => h(App),
   created () {
     this.$store.dispatch('loadOrders')
+    this.$store.dispatch('loadBooks')
   }
 }).$mount('#app')
