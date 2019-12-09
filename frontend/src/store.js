@@ -96,6 +96,26 @@ export default new Vuex.Store({
     orders (state) {
       return state.orders
     },
+    books (state) {
+      return [
+        {
+          id: 1,
+          title: 'Harry Potter',
+          author: 'J.K',
+          print: 'PTW',
+          prize: 15,
+          stocks: 4
+        },
+        {
+          id: 2,
+          title: 'GOT',
+          author: 'J.K',
+          print: 'PTW',
+          prize: 15,
+          stocks: 4
+        }
+      ]
+    },
     user (state) {
       return { user: 'test' }
       // return state.user
