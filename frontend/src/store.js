@@ -6,6 +6,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     orders: [],
+    books: [],
     loading: false
     // user: null,
     // error: null
@@ -13,6 +14,9 @@ export default new Vuex.Store({
   mutations: {
     setLoadedOrders (state, payload) {
       state.orders = payload
+    },
+    setLoadedBooks (state, payload) {
+      state.books = payload
     },
     // setUser (state, payload) {
     //   state.user = payload
@@ -33,6 +37,13 @@ export default new Vuex.Store({
       commit('setLoading', true)
       fetch('/api/orders').then(res => res.json()).then((res) => {
         commit('setLoadedOrders', res.res)
+        commit('setLoading', false)
+      })
+    },
+    loadBooks ({ commit }) {
+      commit('setLoading', true)
+      fetch('/api/books').then(res => res.json()).then((res) => {
+        commit('setLoadedBooks', res.res)
         commit('setLoading', false)
       })
     }
@@ -97,24 +108,7 @@ export default new Vuex.Store({
       return state.orders
     },
     books (state) {
-      return [
-        {
-          id: 1,
-          title: 'Harry Potter',
-          author: 'J.K',
-          print: 'PTW',
-          prize: 15,
-          stocks: 4
-        },
-        {
-          id: 2,
-          title: 'GOT',
-          author: 'J.K',
-          print: 'PTW',
-          prize: 15,
-          stocks: 4
-        }
-      ]
+      return state.books
     },
     user (state) {
       return { user: 'test' }

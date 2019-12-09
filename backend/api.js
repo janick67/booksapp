@@ -178,7 +178,12 @@ app.get('/api/orders',(req,res) => {
   let sql =`select * from orders`
   console.log(sql)
   sendSql(res, sql)
+});
 
+app.get('/api/books',(req,res) => {
+  let sql =`select * from books`
+  console.log(sql)
+  sendSql(res, sql)
 });
 
 app.use(express.static('../frontend/'));
@@ -196,6 +201,7 @@ function sendSql(res,sql)
   const query = db.query(sql, (err, result) => {
     //console.log(result);
     if (err){console.error(err);  return res.send({error:err,res:null})};
+    console.log(result);
     res.send({err:null,res:result});
   });
 }

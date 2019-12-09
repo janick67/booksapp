@@ -7,7 +7,7 @@
 <v-data-table
     :headers="headers"
     :items="desserts"
-    hide-default-footer="true"
+    :hide-default-footer=true
     class="elevation-1"
   >
     <template v-slot:top>
@@ -48,12 +48,12 @@ import modalChoseBooks from './ChooseBooksModal'
       headers: [
         {
           text: 'Tytuł',
-          value: 'title',
+          value: 'bo_title',
         },
-        { text: 'Autor', value: 'author' },
-        { text: 'Wydawnictwo', value: 'print' },
+        { text: 'Autor', value: 'bo_author' },
+        { text: 'Wydawnictwo', value: 'bo_printHouse' },
         { text: 'Na magazynie', value: 'stocks' },
-        { text: 'Cena', value: 'prize' },
+        { text: 'Cena', value: 'bo_price' },
         { text: 'Sztuk', value: 'count', sortable: false },
         { text: 'Akcja', value: 'action', sortable: false },
       ],
@@ -63,47 +63,14 @@ import modalChoseBooks from './ChooseBooksModal'
       modalChoseBooks
     },
 
-    computed: {
-      formTitle () {
-        return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
-      },
-    },
-
-    watch: {
-      dialog (val) {
-        val || this.close()
-      },
-    },
 
     methods: {
-      editItem (item) {
-        this.editedIndex = this.desserts.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialog = true
-      },
       modalSubmit(el){
-          this.desserts = el;
+          this.desserts = [...this.desserts,...el];
       },
       deleteItem (item) {
         const index = this.desserts.indexOf(item)
         this.desserts.splice(index, 1)
-      },
-
-      close () {
-        this.dialog = false
-        setTimeout(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-        }, 300)
-      },
-
-      save () {
-        if (this.editedIndex > -1) {
-          Object.assign(this.desserts[this.editedIndex], this.editedItem)
-        } else {
-          this.desserts.push(this.editedItem)
-        }
-        this.close()
       },
     },
   }
