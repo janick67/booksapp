@@ -1,77 +1,89 @@
 <template>
+        <v-dialog v-model="dialog" max-width="700">
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" dark class="mb-2" v-on="on">Dodaj pozycję</v-btn>
+          </template>
+              <template>
+                <v-card>
+                  <v-card-title>
+                    Wybierz książkę
+                    <v-spacer></v-spacer>
+                    <v-text-field
+                      v-model="search"
+                      append-icon="mdi-search"
+                      label="Search"
+                      single-line
+                      hide-details
+                    ></v-text-field>
+                    <v-btn small color="primary" @click='submit'>Wybierz</v-btn>
+                  </v-card-title>
+                  <v-data-table
+                    v-if="renderComponent"
+                    :headers="headers"
+                    :items="books"
+                    :search="search"
+                  >
+                  <template v-slot:item.checkbox="{ item }">
+                    <v-checkbox v-model="item.checkbox"></v-checkbox>
+                  </template>
+                </v-data-table>
+                </v-card>
+              </template>
+        </v-dialog>
 
-<v-card
-    class="mx-2"
-  >
-    <v-card-text class="text--primary">
-<v-data-table
-    :headers="headers"
-    :items="desserts"
-    :hide-default-footer=true
-    class="elevation-1"
-  >
-    <template v-slot:top>
-      <v-toolbar flat color="white">
-        <v-toolbar-title>Książki</v-toolbar-title>
-        <v-divider
-          class="mx-4"
-          inset
-          vertical
-        ></v-divider>
-        <v-spacer></v-spacer>
-        <modalChoseBooks  @submit="modalSubmit"/>
-      </v-toolbar>
-    </template>
-    <template v-slot:item.count="{ item }">
-        <v-text-field
-        value="1"
-          ></v-text-field>
-    </template>
-    <template v-slot:item.action="{ item }">
-      <v-icon
-        small
-        @click="deleteItem(item)"
-      >
-        mdi-delete
-      </v-icon>
-    </template>
-  </v-data-table>
-    </v-card-text>
-  </v-card>
 </template>
 
 <script>
-import modalChoseBooks from './ChooseBooksModal'
+import { log } from 'util';
   export default {
-    data: () => ({
-      dialog: false,
-      headers: [
-        {
-          text: 'Tytuł',
-          value: 'bo_title',
-        },
-        { text: 'Autor', value: 'bo_author' },
-        { text: 'Wydawnictwo', value: 'bo_printHouse' },
-        { text: 'Na magazynie', value: 'stocks' },
-        { text: 'Cena', value: 'bo_price' },
-        { text: 'Sztuk', value: 'count', sortable: false },
-        { text: 'Akcja', value: 'action', sortable: false },
-      ],
-      desserts: [],
-    }),
-    components:{
-      modalChoseBooks
+    data () {
+      return {
+        dialog: false,
+        search: '',
+        renderComponent: true,
+        headers: [
+          {
+            text: '',
+            align: 'left',
+            sortable: false,
+            value: 'checkbox'
+          },
+          { text: 'Tytuł', value: 'bo_title' },
+          { text: 'Autor', value: 'bo_author' },
+          { text: 'Wydawnictwo', value: 'bo_printHouse' },
+          { text: 'Na magazynie', value: 'stocks' },
+        ],
+      }
     },
-
-
-    methods: {
-      modalSubmit(el){
-          this.desserts = [...this.desserts,...el];
+    computed:{
+      books(){
+        return this.$store.getters.books;
+      }
+    },
+    created(){
+        this.$store.dispatch('loadBooks')
       },
-      deleteItem (item) {
-        const index = this.desserts.indexOf(item)
-        this.desserts.splice(index, 1)
+    methods:{
+      submit() {
+        this.$emit('submit',this.books.filter(el => el.checkbox))
+        this.close()
       },
+      close () {
+        this.books.forEach(el => {
+        delete el.checkbox;        
+        });
+        this.forceRerender()
+        this.dialog = false
+      },
+      forceRerender() {
+        // Remove my-component from the DOM
+        this.renderComponent = false;
+        
+        this.$nextTick(() => {
+          // Add the component back in
+          this.renderComponent = true;
+        });
+      }
     },
   }
 </script>
