@@ -186,6 +186,12 @@ app.get('/api/books',(req,res) => {
   sendSql(res, sql)
 });
 
+app.get('/api/customers',(req,res) => {
+  let sql =`select * from customers`
+  console.log(sql)
+  sendSql(res, sql)
+});
+
 app.use(express.static('../frontend/'));
 
 

@@ -11,16 +11,16 @@
             <v-row>
               <v-col cols="12" md="4">
                 <v-text-field
-                  v-model="customer"
+                  v-model="showCustomer"
                   label="Klient"
                   required
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="4">
-                <v-btn small color="primary" @click='submit'>Wybierz istniejącego</v-btn>
+                <ChooseCustomer  @submit="modalSubmit"/>
               </v-col>
               <v-col cols="12" md="4">
-                <v-btn small color="primary" @click='submit'>Dodaj nowego</v-btn>
+                <!-- <v-btn small color="primary" @click='submit'>Dodaj nowego</v-btn> -->
               </v-col>
             </v-row>
             <v-row>
@@ -114,12 +114,30 @@
 </template>
 
 <script>
-import ChooseBooks from './ChooseBooks'
+import ChooseCustomer from './ChooseCustomer'
     export default {
       data(){
         return {
           delivery:null,
-          deliveryMethods:['Odbiór własny','Kurier']
+          deliveryMethods:['Odbiór własny','Kurier'],
+          customer:null,
+        }
+      },
+      components:{
+        ChooseCustomer
+        },
+      computed:{
+        showCustomer(){
+          if (this.customer !== null && typeof this.customer.cu_company != 'undefined'){
+            return this.customer.cu_company
+          }
+          else return '---'
+        }
+      },
+      methods:{
+        modalSubmit(customer){
+          console.log('no elo z wyboru klienta',customer);
+          this.customer = customer[0];
         }
       }
     }

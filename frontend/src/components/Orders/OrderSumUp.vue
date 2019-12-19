@@ -13,14 +13,14 @@
                 <v-text-field
                   v-model="netto"
                   label="Netto"
-                  disabled="true"
+                  :disabled=true
                 ></v-text-field>
               </v-col>
               <v-col>
                 <v-text-field
                   v-model="gross"
                   label="Brutto"
-                  disabled="true"
+                  :disabled=true
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -36,8 +36,8 @@ import ChooseBooks from './ChooseBooks'
     export default {
       data(){
         return {
-          delivery:null,
-          deliveryMethods:['Odbiór własny','Kurier']
+          netto:144,
+          gross:412
         }
       }
     }

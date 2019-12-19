@@ -7,6 +7,7 @@ export default new Vuex.Store({
   state: {
     orders: [],
     books: [],
+    customers: [],
     loading: false
     // user: null,
     // error: null
@@ -17,6 +18,9 @@ export default new Vuex.Store({
     },
     setLoadedBooks (state, payload) {
       state.books = payload
+    },
+    setLoadedCustomers (state, payload) {
+      state.customers = payload
     },
     // setUser (state, payload) {
     //   state.user = payload
@@ -44,6 +48,13 @@ export default new Vuex.Store({
       commit('setLoading', true)
       fetch('/api/books').then(res => res.json()).then((res) => {
         commit('setLoadedBooks', res.res)
+        commit('setLoading', false)
+      })
+    },
+    loadCustomers ({ commit }) {
+      commit('setLoading', true)
+      fetch('/api/customers').then(res => res.json()).then((res) => {
+        commit('setLoadedCustomers', res.res)
         commit('setLoading', false)
       })
     }
@@ -109,6 +120,9 @@ export default new Vuex.Store({
     },
     books (state) {
       return state.books
+    },
+    customers (state) {
+      return state.customers
     },
     user (state) {
       return { user: 'test' }
