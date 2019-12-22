@@ -17,7 +17,7 @@
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="4">
-                <ChooseCustomer  @submit="modalSubmit"/>
+                <ChooseCustomer  @submit="submitCustomer"/>
               </v-col>
               <v-col cols="12" md="4">
                 <!-- <v-btn small color="primary" @click='submit'>Dodaj nowego</v-btn> -->
@@ -33,19 +33,19 @@
               </v-col>
               
             </v-row>
-            <v-row v-if="delivery=='Kurier'">
+            <v-row>
               <v-col>
                 <v-text-field
-                  v-model="address"
+                  v-model="showAddress"
                   label="Adres"
                   required
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="4">
-                <v-btn small color="primary" @click='submit'>Wybierz istniejący</v-btn>
+                <ChooseAddress  @submit="submitAddress" :param="{delivery: this.delivery,customer: this.customer}"/>
               </v-col>
-              <v-col cols="12" md="4">
-                <v-btn small color="primary" @click='submit'>Dodaj nowy</v-btn>
+              <v-col cols="12" md="4" >
+                <v-btn v-if="delivery=='Kurier'" small color="primary" @click='submit'>Dodaj nowy</v-btn>
               </v-col>
             </v-row>
             <!--<v-row>
@@ -115,16 +115,19 @@
 
 <script>
 import ChooseCustomer from './ChooseCustomer'
+import ChooseAddress from './ChooseAddress'
     export default {
       data(){
         return {
-          delivery:null,
+          delivery:'Kurier',
           deliveryMethods:['Odbiór własny','Kurier'],
           customer:null,
+          address:null,
         }
       },
       components:{
-        ChooseCustomer
+        ChooseCustomer,
+        ChooseAddress
         },
       computed:{
         showCustomer(){
@@ -132,12 +135,20 @@ import ChooseCustomer from './ChooseCustomer'
             return this.customer.cu_company
           }
           else return '---'
+        },
+        showAddress(){
+          if (this.address !== null && typeof this.address.ad_name != 'undefined'){
+            return `${this.address.ad_name} (${this.address.ad_address1})`
+          }
+          else return '---'
         }
       },
       methods:{
-        modalSubmit(customer){
-          console.log('no elo z wyboru klienta',customer);
+        submitCustomer(customer){
           this.customer = customer[0];
+        },
+        submitAddress(address){
+          this.address = address[0];
         }
       }
     }
