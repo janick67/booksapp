@@ -1,12 +1,12 @@
 <template>
         <v-dialog v-model="dialog" max-width="700">
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark class="mb-2" v-on="on">Dodaj pozycję</v-btn>
+            <v-btn color="primary" dark class="mb-2" v-on="on">Wybierz adres</v-btn>
           </template>
               <template>
                 <v-card>
                   <v-card-title>
-                    Wybierz książkę
+                    Wybierz adres
                     <v-spacer></v-spacer>
                     <v-text-field
                       v-model="search"
@@ -20,7 +20,7 @@
                   <v-data-table
                     v-if="renderComponent"
                     :headers="headers"
-                    :items="books"
+                    :items="address"
                     :search="search"
                   >
                   <template v-slot:item.checkbox="{ item }">
@@ -48,29 +48,35 @@ import { log } from 'util';
             sortable: false,
             value: 'checkbox'
           },
-          { text: 'Tytuł', value: 'bo_title' },
-          { text: 'Autor', value: 'bo_author' },
-          { text: 'Wydawnictwo', value: 'bo_printHouse' },
-          { text: 'Na magazynie', value: 'stocks' },
-        ],
+          { text: 'Nazwa', value: 'ad_name' },
+          { text: 'Miasto', value: 'ad_city' },
+          { text: 'Kod pocztowy', value: 'ad_postalCode' },
+          { text: 'Adres', value: 'ad_address1' },
+          { text: 'Adres 2', value: 'ad_address2'}
+       ],
       }
     },
     computed:{
-      books(){
-        return this.$store.getters.books;
+      address(){
+        return this.$store.getters.address.filter(el => {
+          if (this.param.customer != null)
+          return el.ca_customerID == this.param.customer.cu_ID
+          return false;
+        });
       }
     },
+    props:['param'],
     created(){
-        this.$store.dispatch('loadBooks')
+        this.$store.dispatch('loadAddress')
       },
     methods:{
       submit() {
-        this.$emit('submit',this.books.filter(el => el.checkbox))
+        this.$emit('submit',this.address.filter(el => el.checkbox))
         this.close()
       },
       close () {
-        this.books.forEach(el => {
-        delete el.checkbox;        
+        this.address.forEach(el => {
+          delete el.checkbox;        
         });
         this.forceRerender()
         this.dialog = false

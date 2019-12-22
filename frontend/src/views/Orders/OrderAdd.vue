@@ -7,18 +7,23 @@
         <v-btn color="primary" @click="makeInternal">Wewnętrzne</v-btn>
     </div>
     <div v-else>
-
-        <ChooseBooks/>
+        <OrderBooks class="ma-2"/>
+        <OrderDetails class="ma-2"/>
+        <OrderSumUp class="ma-2"/>
     </div>
 </div>
 </template>
 
 <script>
-    import ChooseBooks from '@/components/Orders/ChooseBooks'
+    import OrderBooks from '@/components/Orders/OrderBooks'
+    import OrderDetails from '@/components/Orders/OrderDetails'
+    import OrderSumUp from '@/components/Orders/OrderSumUp'
 
     export default {
         components: {
-            ChooseBooks
+            OrderBooks,
+            OrderDetails,
+            OrderSumUp
         },
         data(){
             return {
