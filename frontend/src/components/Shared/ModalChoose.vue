@@ -1,12 +1,12 @@
 <template>
         <v-dialog v-model="dialog" max-width="700">
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark class="mb-2" v-on="on">Wybierz kontrahenta</v-btn>
+            <v-btn color="primary" dark class="mb-2" v-on="on">{{btnText}}</v-btn>
           </template>
               <template>
                 <v-card>
                   <v-card-title>
-                    Wybierz kontrahenta
+                    {{title}}
                     <v-spacer></v-spacer>
                     <v-text-field
                       v-model="search"
@@ -20,7 +20,7 @@
                   <v-data-table
                     v-if="renderComponent"
                     :headers="headers"
-                    :items="customers"
+                    :items="rows"
                     :search="search"
                   >
                   <template v-slot:item.checkbox="{ item }">
@@ -41,37 +41,17 @@ import { log } from 'util';
         dialog: false,
         search: '',
         renderComponent: true,
-        headers: [
-          {
-            text: '',
-            align: 'left',
-            sortable: false,
-            value: 'checkbox'
-          },
-          { text: 'Firma', value: 'cu_company' },
-          { text: 'NIP', value: 'cu_NIP' },
-          { text: 'Imię', value: 'cu_firstName' },
-          { text: 'Nazwisko', value: 'cu_lastName' },
-          { text: 'E-mail', value: 'cu_email'}
-       ],
       }
     },
-    computed:{
-      customers(){
-        return this.$store.getters.customers;
-      }
-    },
-    created(){
-        this.$store.dispatch('loadCustomers')
-      },
+    props:['title','headers','rows','btnText'],
     methods:{
       submit() {
-        this.$emit('submit',this.customers.filter(el => el.checkbox))
+        this.$emit('submit',this.rows.filter(el => el.checkbox))
         this.close()
       },
       close () {
-        this.customers.forEach(el => {
-          delete el.checkbox;        
+        this.rows.forEach(el => {
+        delete el.checkbox;        
         });
         this.forceRerender()
         this.dialog = false

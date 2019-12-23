@@ -10,17 +10,24 @@
           <v-container>
             <v-row>
               <v-col cols="12" md="4">
-                <v-text-field
-                  v-model="showCustomer"
-                  label="Klient"
-                  required
-                ></v-text-field>
+                <v-text-field v-model="showCustomer" label="Klient" :disabled=true></v-text-field>
               </v-col>
               <v-col cols="12" md="4">
-                <ChooseCustomer  @submit="submitCustomer"/>
+                <ModalChoose  @submit="submitCustomer" title="Wybierz kontrahenta" btnText="Wybierz kontrahenta" :headers="customerHeaders" :rows="customers"/>
               </v-col>
               <v-col cols="12" md="4">
-                <!-- <v-btn small color="primary" @click='submit'>Dodaj nowego</v-btn> -->
+                 <v-btn small color="primary" @click='addCustomer'>Dodaj nowego</v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field v-model="showStore" label="Filia" :disabled=true></v-text-field>
+              </v-col>
+              <v-col>
+                <v-text-field v-model="showSourceWarehouse" label="Magazyn" :disabled=true></v-text-field>
+              </v-col>
+              <v-col>
+                <ModalChoose  @submit="submitSourceWarehouse" title="Wybierz magazyn" btnText="Wybierz magazyn" :headers="sourceWarehouseHeaders" :rows="sourceWarehouses"/>
               </v-col>
             </v-row>
             <v-row>
@@ -35,77 +42,15 @@
             </v-row>
             <v-row>
               <v-col>
-                <v-text-field
-                  v-model="showAddress"
-                  label="Adres"
-                  required
-                ></v-text-field>
+                <v-text-field v-model="showAddress" label="Adres" :disabled=true></v-text-field>
               </v-col>
               <v-col cols="12" md="4">
-                <ChooseAddress  @submit="submitAddress" :param="{delivery: this.delivery,customer: this.customer}"/>
+                 <ModalChoose @submit="submitAddress" title="Wybierz adres" btnText="Wybierz adres" :headers="addressHeaders" :rows="addresses" ></ModalChoose>
               </v-col>
               <v-col cols="12" md="4" >
-                <v-btn v-if="delivery=='Kurier'" small color="primary" @click='submit'>Dodaj nowy</v-btn>
+                <v-btn v-if="delivery=='Kurier'" small color="primary" @click='addAddress'>Dodaj nowy</v-btn>
               </v-col>
             </v-row>
-            <!--<v-row>
-              <v-col
-                cols="12"
-                md="4"
-              >
-                 <v-text-field
-                  v-model="company"
-                  label="Firma"
-                  required
-                ></v-text-field>
-              </v-col>
-
-              <v-col
-                cols="12"
-                md="4"
-              >
-                <v-text-field
-                  v-model="nip"
-                  label="NIP"
-                  required
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col
-                cols="12"
-                md="4"
-              >
-                <v-text-field
-                  v-model="firstname"
-                  label="Imię"
-                  required
-                ></v-text-field>
-              </v-col>
-
-              <v-col
-                cols="12"
-                md="4"
-              >
-                <v-text-field
-                  v-model="lastname"
-                  label="Nazwisko"
-                  required
-                ></v-text-field>
-              </v-col>
-
-              <v-col
-                cols="12"
-                md="4"
-              >
-                <v-text-field
-                  v-model="email"
-                  label="E-mail"
-                  required
-                ></v-text-field>
-              </v-col>
-
-            </v-row> -->
           </v-container>
         </v-form>
       </template>
@@ -114,23 +59,66 @@
 </template>
 
 <script>
-import ChooseCustomer from './ChooseCustomer'
-import ChooseAddress from './ChooseAddress'
-    export default {
+import ModalChoose from '../Shared/ModalChoose'
+
+export default {
       data(){
         return {
           delivery:'Kurier',
           deliveryMethods:['Odbiór własny','Kurier'],
           customer:null,
           address:null,
-        }
+          store:'141opl',
+          sourceWarehouse:null,
+          customerHeaders: [
+              {text: '', align: 'left', sortable: false, value: 'checkbox' },
+              { text: 'Firma', value: 'cu_company' },
+              { text: 'NIP', value: 'cu_NIP' },
+              { text: 'Imię', value: 'cu_firstName' },
+              { text: 'Nazwisko', value: 'cu_lastName' },
+              { text: 'E-mail', value: 'cu_email'}],
+        
+        
+          addressHeaders: [
+            { text: '', align: 'left', sortable: false, value: 'checkbox' },
+            { text: 'Nazwa', value: 'ad_name' },
+            { text: 'Miasto', value: 'ad_city' },
+            { text: 'Kod pocztowy', value: 'ad_postalCode' },
+            { text: 'Adres', value: 'ad_address1' },
+            { text: 'Adres 2', value: 'ad_address2'}],
+       }
       },
       components:{
-        ChooseCustomer,
-        ChooseAddress
+        ModalChoose
+        },
+      mounted(){
+          this.$store.dispatch('loadCustomers')
+          this.$store.dispatch('loadAddresses')
         },
       computed:{
+        customers(){
+          return this.$store.getters.customers; 
+        },
+        addresses(){
+          return this.$store.getters.addresses.filter(el => {
+            if (this.customer != null)
+            return el.ca_customerID == this.customer.cu_ID
+            return false;
+          });
+        },
         showCustomer(){
+          if (this.customer !== null && typeof this.customer.cu_company != 'undefined'){
+            return this.customer.cu_company
+          }
+          else return '---'
+        },
+        showStore(){
+          if (this.customer !== null && typeof this.customer.cu_company != 'undefined'){
+            return this.customer.cu_company
+          }
+          else return '---'
+        },
+        showSourceWarehouse(){
           if (this.customer !== null && typeof this.customer.cu_company != 'undefined'){
             return this.customer.cu_company
           }
@@ -144,11 +132,20 @@ import ChooseAddress from './ChooseAddress'
         }
       },
       methods:{
-        submitCustomer(customer){
-          this.customer = customer[0];
+        submitCustomer(payload){
+          this.customer = payload[0];
         },
-        submitAddress(address){
-          this.address = address[0];
+        submitAddress(payload){
+          this.address = payload[0];
+        },
+        submitSourceWarehouse(payload){
+          this.sourceWarehouse = payload[0];
+        },
+        addAddress(){
+          console.log("tutaj modal który pozwala na dodanie nowego adresu");
+        },
+        addCustomer(){
+          console.log("tutaj modal który pozwala na dodanie nowego kontrahenta");
         }
       }
     }

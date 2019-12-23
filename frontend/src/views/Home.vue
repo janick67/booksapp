@@ -28,9 +28,6 @@ export default {
   },
   data () {
     return {
-      tabs: ['Wszystkie', 'Wydatki', 'Przychody', 'Pożyczki', 'Długi', 'Przelewy'],
-      tab: 0,
-      selected: []
     }
   },
   computed: {
