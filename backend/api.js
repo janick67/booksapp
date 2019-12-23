@@ -192,7 +192,7 @@ app.get('/api/customers',(req,res) => {
   sendSql(res, sql)
 });
 
-app.get('/api/address',(req,res) => {
+app.get('/api/addresses',(req,res) => {
   let sql =`SELECT * FROM address ad
             join customeraddress ca on ca_addressid = ad_ID`
   console.log(sql)

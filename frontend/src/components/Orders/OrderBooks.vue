@@ -21,7 +21,8 @@
         ></v-divider>
         <v-spacer></v-spacer>
         <v-btn color="primary" dark class="mb-2 mx-2" @click="calcDiscount">Przelicz rabaty</v-btn>
-        <ChooseBooks  @submit="modalSubmit"/>
+        <!-- <ChooseBooks  @submit="modalSubmit"/> -->
+        <ModalChoose  @submit="modalSubmit" title="Wybierz ksiażki" btnText="Dodaj pozycje" :headers="booksHeaders" :rows="books"/>
       </v-toolbar>
     </template>
     <template v-slot:item.count="{ item }">
@@ -43,7 +44,7 @@
 </template>
 
 <script>
-import ChooseBooks from './ChooseBooks'
+import ModalChoose from '../Shared/ModalChoose'
   export default {
     data: () => ({
       dialog: false,
@@ -60,12 +61,24 @@ import ChooseBooks from './ChooseBooks'
         { text: 'Akcja', value: 'action', sortable: false },
       ],
       desserts: [],
+      booksHeaders: [
+          { text: '', align: 'left', sortable: false, value: 'checkbox' },
+          { text: 'Tytuł', value: 'bo_title' },
+          { text: 'Autor', value: 'bo_author' },
+          { text: 'Wydawnictwo', value: 'bo_printHouse' },
+          { text: 'Na magazynie', value: 'stocks' },],
     }),
     components:{
-      ChooseBooks
+      ModalChoose
     },
-
-
+    computed:{
+      books(){
+        return this.$store.getters.books;
+      }      
+    },
+    mounted(){
+      this.$store.dispatch('loadBooks')
+    },
     methods: {
       generateOrderJSON(){
         
