@@ -21,7 +21,6 @@
         ></v-divider>
         <v-spacer></v-spacer>
         <v-btn color="primary" dark class="mb-2 mx-2" @click="calcDiscount">Przelicz rabaty</v-btn>
-        <!-- <ChooseBooks  @submit="modalSubmit"/> -->
         <ModalChoose  @submit="modalSubmit" title="Wybierz ksiażki" btnText="Dodaj pozycje" :headers="booksHeaders" :rows="books"/>
       </v-toolbar>
     </template>

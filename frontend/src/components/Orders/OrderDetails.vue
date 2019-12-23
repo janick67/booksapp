@@ -137,7 +137,7 @@ export default {
         },
         submitAddress(payload){
           this.address = payload[0];
-        },
+        }, 
         submitSourceWarehouse(payload){
           this.sourceWarehouse = payload[0];
         },

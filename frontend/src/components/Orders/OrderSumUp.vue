@@ -32,7 +32,6 @@
 </template>
 
 <script>
-import ChooseBooks from './ChooseBooks'
     export default {
       data(){
         return {
