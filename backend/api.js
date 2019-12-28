@@ -199,6 +199,13 @@ app.get('/api/addresses',(req,res) => {
   sendSql(res, sql)
 });
 
+app.get('/api/warehouses',(req,res) => {
+  let sql =`SELECT wa.*, ad.ad_city FROM warehouses wa
+  join address ad on wa.wa_addressID = ad.ad_id`
+  console.log(sql)
+  sendSql(res, sql)
+});
+
 app.use(express.static('../frontend/'));
 
 
