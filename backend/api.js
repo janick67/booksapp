@@ -180,6 +180,10 @@ app.get('/api/orders',(req,res) => {
   sendSql(res, sql)
 });
 
+app.post('/api/orders',(req,res) => {
+  console.log(req.body)
+});
+
 app.get('/api/books',(req,res) => {
   let sql =`select * from books`
   console.log(sql)

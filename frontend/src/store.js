@@ -10,6 +10,8 @@ export default new Vuex.Store({
     customers: [],
     addresses: [],
     warehouses: [],
+    actualOrder: {},
+    AOResponse: {},
     loading: false
     // user: null,
     // error: null
@@ -29,6 +31,25 @@ export default new Vuex.Store({
     },
     setLoadedWarehouses (state, payload) {
       state.warehouses = payload
+    },
+    clearActualOrder (state) {
+      state.actualOrder = {
+        details: {},
+        selectedBooks: {},
+        confirmed: false
+      }
+    },
+    setAOSelectedBooks (state, payload) {
+      state.actualOrder.selectedBooks = payload
+    },
+    setAODetails (state, payload) {
+      state.actualOrder.details = payload
+    },
+    setAOConfirmed (state) {
+      state.actualOrder.confirmed = true
+    },
+    setAOResponse (state, payload){
+      state.AOResponse = payload
     },
     // setUser (state, payload) {
     //   state.user = payload
@@ -77,6 +98,28 @@ export default new Vuex.Store({
       commit('setLoading', true)
       fetch('/api/warehouses').then(res => res.json()).then((res) => {
         commit('setLoadedWarehouses', res.res)
+        commit('setLoading', false)
+      })
+    },
+    clearActualOrder ({ commit }) {
+      commit('clearActualOrder')
+    },
+    setAOSelectedBooks ({ commit }, payload) {
+      commit('setAOSelectedBooks', payload)
+    },
+    setAODetails ({ commit }, payload) {
+      commit('setAODetails', payload)
+    },
+    sendOrder ({ commit, state }) {
+      commit('setLoading', true)
+      fetch('/api/orders/', {
+        method: 'POST', // or 'PUT'
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(state.actualOrder)
+      }).then(res => res.json()).then((res) => {
+        commit('setResponseCreateOrder', res.res)
         commit('setLoading', false)
       })
     }
@@ -151,6 +194,9 @@ export default new Vuex.Store({
     },
     warehouses (state) {
       return state.warehouses
+    },
+    actualOrder (state) {
+      return state.actualOrder
     },
     user (state) {
       return { user: 'test', store: { st_name: 'Zabornia', st_short: 'Zabo', st_addressID: '10', st_warehouseID: '1' } }

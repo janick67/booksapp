@@ -26,21 +26,21 @@
               <v-col>
                 <v-text-field v-model="autoSourceWarehouse.wa_code" label="Magazyn" :disabled=true></v-text-field>
               </v-col>
-              <v-col v-if="delivery=='Kurier'">
+              <v-col v-if="deliveryType=='Kurier'">
                 <ModalChoose  @submit="submitSourceWarehouse" title="Wybierz magazyn" btnText="Wybierz magazyn" :headers="sourceWarehouseHeaders" :rows="sourceWarehouses"/>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="4">
                 <v-combobox
-                v-model="delivery"
+                v-model="deliveryType"
                 :items="deliveryMethods"
                 label="Sposób dostawy"
               ></v-combobox>
               </v-col>
               
             </v-row>
-            <v-row v-if="delivery=='Kurier'">
+            <v-row v-if="deliveryType=='Kurier'">
               <v-col>
                 <v-text-field v-model="showAddress" label="Adres" :disabled=true></v-text-field>
               </v-col>
@@ -64,7 +64,7 @@ import ModalChoose from '../Shared/ModalChoose'
 export default {
       data(){
         return {
-          delivery:'Kurier',
+          deliveryType:'Kurier',
           deliveryMethods:['Odbiór własny','Kurier'],
           customer:null,
           address:null,
@@ -100,6 +100,9 @@ export default {
           this.$store.dispatch('loadAddresses')
           this.$store.dispatch('loadWarehouses')
         },
+        updated(){
+          this.$store.dispatch('setAODetails',{customer: this.autoCustomer, sourceWarehouse: this.autoSourceWarehouse, store: this.autoStore, address: this.autoAddress, deliveryType: this.deliveryType})
+        },
       computed:{
         customers(){
           return this.$store.getters.customers; 
@@ -124,7 +127,7 @@ export default {
           else return {st_name:'---'} 
         },
         autoCustomer(){
-          if (this.customer !== null && typeof this.customer.cu_company != 'undefined'){
+          if (this.customer !== null && typeof this.customer !== 'undefined' && typeof this.customer.cu_company !== 'undefined'){
             return this.customer
           }
           else return {cu_company:'---'}
@@ -163,6 +166,12 @@ export default {
         },
         submitSourceWarehouse(payload){
           this.sourceWarehouse = payload[0];
+        },
+        getDetails(){
+          console.log('this.deliveryMethods',this.deliveryMethods)
+          return {
+            customer: this.deliveryMethods
+          }
         },
         addAddress(){
           console.log("tutaj modal który pozwala na dodanie nowego adresu");
