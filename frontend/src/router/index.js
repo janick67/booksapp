@@ -5,6 +5,7 @@ import Signin from '@/views/Signin.vue'
 import Signup from '@/views/Signup.vue'
 import Orders from '@/views/Orders/Orders.vue'
 import OrderAdd from '@/views/Orders/OrderAdd.vue'
+import UserAdd from '@/views/Admin/UserAdd.vue'
 import AuthGuard from './auth-guard'
 
 Vue.use(Router)
@@ -28,6 +29,12 @@ export default new Router({
       path: '/orders/add',
       name: 'Dodaj zamówienie',
       component: OrderAdd,
+      authGuard: AuthGuard
+    },
+    {
+      path: '/admin/add',
+      name: 'Dodaj użytkownika',
+      component: UserAdd,
       authGuard: AuthGuard
     },
     {
