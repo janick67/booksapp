@@ -6,8 +6,9 @@
   <v-card-title>Książki</v-card-title>
     <v-card-text class="text--primary">
 <v-data-table
+    v-if="renderComponent"
     :headers="headers"
-    :items="desserts"
+    :items="selectedBooks"
     :hide-default-footer=true
     class="elevation-1"
   >
@@ -26,8 +27,11 @@
     </template>
     <template v-slot:item.count="{ item }">
         <v-text-field
-        value="1"
+        v-model="item.count"
           ></v-text-field>
+    </template>
+    <template v-slot:item.sum="{ item }">
+        {{calculatePrice(item).netto+' zł'}}
     </template>
     <template v-slot:item.action="{ item }">
       <v-icon
@@ -46,25 +50,27 @@
 import ModalChoose from '../Shared/ModalChoose'
   export default {
     data: () => ({
+      renderComponent:true,
       dialog: false,
       headers: [
         {
           text: 'Tytuł',
-          value: 'bo_title',
+          value: 'title',
         },
-        { text: 'Autor', value: 'bo_author' },
-        { text: 'Wydawnictwo', value: 'bo_printHouse' },
+        { text: 'Autor', value: 'author' },
+        { text: 'Wydawnictwo', value: 'printHouse' },
         { text: 'Na magazynie', value: 'stocks' },
-        { text: 'Cena', value: 'bo_price' },
-        { text: 'Sztuk', value: 'count', sortable: false },
+        { text: 'Cena', value: 'price' },
+        { text: 'Sztuk', value: 'count' },
+        { text: 'Suma', value: 'sum' },
         { text: 'Akcja', value: 'action', sortable: false },
       ],
-      desserts: [],
+      selectedBooks: [],
       booksHeaders: [
           { text: '', align: 'left', sortable: false, value: 'checkbox' },
-          { text: 'Tytuł', value: 'bo_title' },
-          { text: 'Autor', value: 'bo_author' },
-          { text: 'Wydawnictwo', value: 'bo_printHouse' },
+          { text: 'Tytuł', value: 'title' },
+          { text: 'Autor', value: 'author' },
+          { text: 'Wydawnictwo', value: 'printHouse' },
           { text: 'Na magazynie', value: 'stocks' },],
     }),
     components:{
@@ -77,22 +83,42 @@ import ModalChoose from '../Shared/ModalChoose'
     },
     mounted(){
       this.$store.dispatch('loadBooks')
+      this.$store.dispatch('clearActualOrder')
     },
     methods: {
-      generateOrderJSON(){
-        
+      getSelectedBooks(){
+        return this.selectedBooks
+      },
+      calculatePrice(book){
+        let netto = book.price * book.count
+        return {netto, gross: (netto*(123/100))}
       },
       calcDiscount(){
         console.log('przeliczam rabaty');
-        
+        this.forceRerender();
       },
-      modalSubmit(el){
-          this.desserts = [...this.desserts,...el];
+      modalSubmit(books){
+          books.forEach(el => {
+            el.count = 1
+          });
+
+          this.selectedBooks = [...this.selectedBooks,...books];
+
+          this.$store.dispatch('setAOSelectedBooks',this.selectedBooks)
       },
       deleteItem (item) {
-        const index = this.desserts.indexOf(item)
-        this.desserts.splice(index, 1)
+        const index = this.selectedBooks.indexOf(item)
+        this.selectedBooks.splice(index, 1)
       },
+      forceRerender() {
+        // Remove my-component from the DOM
+        this.renderComponent = false;
+        
+        this.$nextTick(() => {
+          // Add the component back in
+          this.renderComponent = true;
+        });
+      }
     },
   }
 </script>

@@ -9,8 +9,9 @@
     <div v-else>
         <OrderBooks class="ma-2"/>
         <OrderDetails class="ma-2"/>
-        <OrderSumUp class="ma-2"/>
+        <!-- <OrderSumUp class="ma-2"/> -->
     </div>
+    <v-btn color="primary" @click="nextForm" >Dalej</v-btn>
 </div>
 </template>
 
@@ -40,7 +41,10 @@
             makeInternal(){
                 this.sale = false;
                 this.internal = true;
-            }
+            },
+            nextForm(){
+                this.$store.dispatch('sendOrder')
+            },
         }
     }
 </script>
