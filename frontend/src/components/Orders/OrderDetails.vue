@@ -10,7 +10,7 @@
           <v-container>
             <v-row>
               <v-col cols="12" md="4">
-                <v-text-field v-model="autoCustomer.cu_company" label="Klient" :disabled=true></v-text-field>
+                <v-text-field v-model="autoCustomer.company" label="Klient" :disabled=true></v-text-field>
               </v-col>
               <v-col cols="12" md="4">
                 <ModalChoose  @submit="submitCustomer" title="Wybierz kontrahenta" btnText="Wybierz kontrahenta" :headers="customerHeaders" :rows="customers"/>
@@ -21,10 +21,10 @@
             </v-row>
             <v-row>
               <v-col>
-                <v-text-field v-model="autoStore.st_name" label="Filia" :disabled=true></v-text-field>
+                <v-text-field v-model="autoStore.name" label="Filia" :disabled=true></v-text-field>
               </v-col>
               <v-col>
-                <v-text-field v-model="autoSourceWarehouse.wa_code" label="Magazyn" :disabled=true></v-text-field>
+                <v-text-field v-model="autoSourceWarehouse.code" label="Magazyn" :disabled=true></v-text-field>
               </v-col>
               <v-col v-if="deliveryType=='Kurier'">
                 <ModalChoose  @submit="submitSourceWarehouse" title="Wybierz magazyn" btnText="Wybierz magazyn" :headers="sourceWarehouseHeaders" :rows="sourceWarehouses"/>
@@ -67,29 +67,29 @@ export default {
           deliveryType:'Kurier',
           deliveryMethods:['Odbiór własny','Kurier'],
           customer:null,
-          address:null,
+          address:{},
           sourceWarehouse:null,
           customerHeaders: [
               {text: '', align: 'left', sortable: false, value: 'checkbox' },
-              { text: 'Firma', value: 'cu_company' },
-              { text: 'NIP', value: 'cu_NIP' },
-              { text: 'Imię', value: 'cu_firstName' },
-              { text: 'Nazwisko', value: 'cu_lastName' },
-              { text: 'E-mail', value: 'cu_email'}],
+              { text: 'Firma', value: 'company' },
+              { text: 'NIP', value: 'nip' },
+              { text: 'Imię', value: 'firstName' },
+              { text: 'Nazwisko', value: 'lastName' },
+              { text: 'E-mail', value: 'email'}],
         
         
           addressHeaders: [
             { text: '', align: 'left', sortable: false, value: 'checkbox' },
-            { text: 'Nazwa', value: 'ad_name' },
-            { text: 'Miasto', value: 'ad_city' },
-            { text: 'Kod pocztowy', value: 'ad_postalCode' },
-            { text: 'Adres', value: 'ad_address1' },
-            { text: 'Adres 2', value: 'ad_address2'}],
+            { text: 'Nazwa', value: 'name' },
+            { text: 'Miasto', value: 'city' },
+            { text: 'Kod pocztowy', value: 'postalCode' },
+            { text: 'Adres', value: 'address1' },
+            { text: 'Adres 2', value: 'address2'}],
             
           sourceWarehouseHeaders: [
             { text: '', align: 'left', sortable: false, value: 'checkbox' },
-            { text: 'Kod', value: 'wa_code' },
-            { text: 'Miasto', value: 'ad_city' }]
+            { text: 'Kod', value: 'code' },
+            { text: 'Miasto', value: 'city' }]
        }
       },
       components:{
@@ -101,7 +101,7 @@ export default {
           this.$store.dispatch('loadWarehouses')
         },
         updated(){
-          this.$store.dispatch('setAODetails',{customer: this.autoCustomer, sourceWarehouse: this.autoSourceWarehouse, store: this.autoStore, address: this.autoAddress, deliveryType: this.deliveryType})
+          this.$store.dispatch('setAODetails',{customer: this.autoCustomer, sourceWarehouse: this.autoSourceWarehouse, store: this.autoStore, address: this.address, deliveryType: this.deliveryType})
         },
       computed:{
         customers(){
@@ -110,7 +110,7 @@ export default {
         addresses(){
           return this.$store.getters.addresses.filter(el => {
             if (this.customer != null)
-            return el.ca_customerID == this.customer.cu_ID
+            return el.customerID == this.customer.id
             return false;
           });
         },
@@ -121,31 +121,31 @@ export default {
           return this.$store.getters.user.store
         },
         autoStore(){
-          if (this.store !== null && typeof this.store.st_name != 'undefined'){
+          if (this.store !== null && typeof this.store.name != 'undefined'){
             return this.store
           }
           else return {st_name:'---'} 
         },
         autoCustomer(){
-          if (this.customer !== null && typeof this.customer !== 'undefined' && typeof this.customer.cu_company !== 'undefined'){
+          if (this.customer !== null && typeof this.customer !== 'undefined' && typeof this.customer.company !== 'undefined'){
             return this.customer
           }
-          else return {cu_company:'---'}
+          else return {company:'---'}
         },
         autoSourceWarehouse(){
-          if (this.sourceWarehouse !== null && typeof this.sourceWarehouse.wa_code != 'undefined'){
+          if (this.sourceWarehouse !== null && typeof this.sourceWarehouse.code != 'undefined'){
             return this.sourceWarehouse
           }
           else if (this.store != null && this.sourceWarehouses != null){
-            let out = this.sourceWarehouses.find(el=> el.wa_id = this.store.st_warehouseID);
+            let out = this.sourceWarehouses.find(el=> el.id = this.store.warehouseID);
             if (typeof out !== 'undefined')
               return out 
           }
           return {wa_code:'---'}
         },
         showAddress(){
-          if (this.address !== null && typeof this.address.ad_name != 'undefined'){
-            return `${this.address.ad_name} (${this.address.ad_address1})`
+          if (this.address !== null && typeof this.address.name != 'undefined'){
+            return `${this.address.name} (${this.address.address1})`
           }
           else return '---'
         }
@@ -153,7 +153,7 @@ export default {
       watch:{
         store: function(newStore,oldStore) {
           if (this.address == null)
-          this.addresses = addresses.find( el => el.ad_id = newStore.st_addressID)
+          this.addresses = addresses.find( el => el.id = newStore.addressID)
           console.log("wyliczam address po zmianie store");
         }
       },

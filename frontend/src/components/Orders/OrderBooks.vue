@@ -56,12 +56,12 @@ import ModalChoose from '../Shared/ModalChoose'
       headers: [
         {
           text: 'Tytuł',
-          value: 'bo_title',
+          value: 'title',
         },
-        { text: 'Autor', value: 'bo_author' },
-        { text: 'Wydawnictwo', value: 'bo_printHouse' },
+        { text: 'Autor', value: 'author' },
+        { text: 'Wydawnictwo', value: 'printHouse' },
         { text: 'Na magazynie', value: 'stocks' },
-        { text: 'Cena', value: 'bo_price' },
+        { text: 'Cena', value: 'price' },
         { text: 'Sztuk', value: 'count' },
         { text: 'Suma', value: 'sum' },
         { text: 'Akcja', value: 'action', sortable: false },
@@ -69,9 +69,9 @@ import ModalChoose from '../Shared/ModalChoose'
       selectedBooks: [],
       booksHeaders: [
           { text: '', align: 'left', sortable: false, value: 'checkbox' },
-          { text: 'Tytuł', value: 'bo_title' },
-          { text: 'Autor', value: 'bo_author' },
-          { text: 'Wydawnictwo', value: 'bo_printHouse' },
+          { text: 'Tytuł', value: 'title' },
+          { text: 'Autor', value: 'author' },
+          { text: 'Wydawnictwo', value: 'printHouse' },
           { text: 'Na magazynie', value: 'stocks' },],
     }),
     components:{
@@ -91,7 +91,7 @@ import ModalChoose from '../Shared/ModalChoose'
         return this.selectedBooks
       },
       calculatePrice(book){
-        let netto = book.bo_price * book.count
+        let netto = book.price * book.count
         return {netto, gross: (netto*(123/100))}
       },
       calcDiscount(){

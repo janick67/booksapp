@@ -10,6 +10,7 @@ const passport = require('passport');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const LocalStrategy = require('passport-local').Strategy;
+const Order = require('./Order.js')
 
 const app = express();
 app.use(cors());
@@ -19,6 +20,9 @@ app.use(bodyParser.json())
 app.use(cookieParser());
 
 const data = new Date();
+
+let orders = []
+setInterval(el => console.log(orders[0]),5000);
 
 const db = mysql.createConnection({
   host    : 'localhost',
@@ -31,8 +35,6 @@ db.connect((err) => {
   if(err) throw err;
   console.log(aktualnaData()+'MySql Connected...');
 });
-
-
 
 const sessionStore = new MySQLStore({
     expiration: 10800000,
@@ -182,29 +184,36 @@ app.get('/api/orders',(req,res) => {
 
 app.post('/api/orders',(req,res) => {
   console.log(req.body)
+  let orderObj = req.body
+  console.log('user')
+  orderObj.details.user = ifExsistElse(req.user,{id:0}) //TODO
+  let order = new Order(orderObj)
+  order.writeToSql(writeSql);
+  orders.push(order)
 });
 
 app.get('/api/books',(req,res) => {
-  let sql =`select * from books`
+  let sql =`select bo_ID id, bo_title title, bo_printhouse printHouse ,bo_ISBN isbn, bo_printdate printdate, bo_category category, bo_description description, bo_author author, bo_price price from books`
   console.log(sql)
   sendSql(res, sql)
 });
 
 app.get('/api/customers',(req,res) => {
-  let sql =`select * from customers`
+  let sql =`
+  select cu_ID id,cu_company company,cu_NIP nip,cu_firstName firstName,cu_lastName lastName,cu_email email,cu_creatorID creatorID,cu_creatorTS creatorTS,cu_modTS modTS,cu_modID modID,cu_isArchival isArichval from customers`
   console.log(sql)
   sendSql(res, sql)
 });
 
 app.get('/api/addresses',(req,res) => {
-  let sql =`SELECT * FROM address ad
+  let sql =`SELECT ad_ID id,ad_name name,ad_address1 address1,ad_address2 address2,ad_city city,ad_postalCode postalCode,ca_customerID customerID FROM address ad
             join customeraddress ca on ca_addressid = ad_ID`
   console.log(sql)
   sendSql(res, sql)
 });
 
 app.get('/api/warehouses',(req,res) => {
-  let sql =`SELECT wa.*, ad.ad_city FROM warehouses wa
+  let sql =`SELECT wa_ID id,wa_code code, ad.ad_city city FROM warehouses wa
   join address ad on wa.wa_addressID = ad.ad_id`
   console.log(sql)
   sendSql(res, sql)
@@ -220,14 +229,27 @@ app.use(function(req, res, next) {
 app.listen(3000, () => console.log(aktualnaData()+'Listen on port 3000....'))
 
 
+function writeSql(sql)
+{
+  return new Promise(function(resolve, reject) {
+    const query = db.query(sql, (err, result) => {
+      if (err){console.error(err)};
+      console.log(result);
+      resolve(result)
+    });
+  })
+}
+
 function sendSql(res,sql)
 {
-  const query = db.query(sql, (err, result) => {
-    //console.log(result);
-    if (err){console.error(err);  return res.send({error:err,res:null})};
-    console.log(result);
-    res.send({err:null,res:result});
-  });
+  return new Promise(function(resolve, reject) {
+    const query = db.query(sql, (err, result) => {
+      if (err){console.error(err);  return res.send({error:err,res:null})};
+      console.log(result);
+      res.send({err:null,res:result});
+      resolve(result)
+    });
+  })
 }
 
 
@@ -243,4 +265,9 @@ function aktualnaData(){
 
 function leadingZero(i) {
   return (i < 10)? '0'+i : i;
+}
+
+function ifExsistElse(one, two = null){
+  if (typeof one !== 'undefined' && one !== null)  return one
+  return two
 }

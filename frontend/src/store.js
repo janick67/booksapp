@@ -34,7 +34,16 @@ export default new Vuex.Store({
     },
     clearActualOrder (state) {
       state.actualOrder = {
-        details: {},
+        details: {
+          id: null,
+          customer: {},
+          sourceWarehouse: {},
+          targetWarehouse: {},
+          status: 0, // 0 - nie zapisane, 1 - zapisane, 2 - w realizacji, 3 - wysałane, 4 - zrealizowane, 5 - anulowane
+          address: {},
+          shipment: {},
+          store: {}
+        },
         selectedBooks: {},
         confirmed: false
       }
@@ -43,12 +52,12 @@ export default new Vuex.Store({
       state.actualOrder.selectedBooks = payload
     },
     setAODetails (state, payload) {
-      state.actualOrder.details = payload
+      state.actualOrder.details = Object.assign({}, state.actualOrder.details, payload)
     },
     setAOConfirmed (state) {
       state.actualOrder.confirmed = true
     },
-    setAOResponse (state, payload){
+    setAOResponse (state, payload) {
       state.AOResponse = payload
     },
     // setUser (state, payload) {
@@ -113,7 +122,7 @@ export default new Vuex.Store({
     sendOrder ({ commit, state }) {
       commit('setLoading', true)
       fetch('/api/orders/', {
-        method: 'POST', // or 'PUT'
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -199,7 +208,7 @@ export default new Vuex.Store({
       return state.actualOrder
     },
     user (state) {
-      return { user: 'test', store: { st_name: 'Zabornia', st_short: 'Zabo', st_addressID: '10', st_warehouseID: '1' } }
+      return { user: 'test', store: { id: 1, name: 'Zabornia', short: 'Zabo', addressID: '10', warehouseID: '1' } }
       // return state.user
     },
     loading (state) {
