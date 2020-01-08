@@ -43,22 +43,23 @@
           return this.$store.getters.actualOrder;
         },
         sumUp(){
-          if (typeof this.actualOrder == 'undefined' || typeof this.actualOrder.selectedBooks == 'undefined' ) return {net:0,gross:0}
-          console.log(this.actualOrder.selectedBooks.length)
-          // || this.actualOrder.selectedBooks.size == 0
-          console.log(this.actualOrder)
-          let grossSum = 0;
-          this.actualOrder.selectedBooks.forEach(el=>{
-            let gross = el.price * el.count;
-            gross -= gross * (el.discountValue/100);
-            grossSum += gross;
-          })
-          if (this.actualOrder.details.deliveryType == 'Kurier') grossSum += 10; 
+          if (typeof this.actualOrder == 'undefined' || typeof this.actualOrder.booksSumGross == 'undefined' ) return {net:0,gross:0}
+          let grossSum = this.actualOrder.booksSumGross;
           
-          let netSum = grossSum - (grossSum*(23/100));
-          netSum = Math.ceil(netSum*100)/100
-          grossSum = Math.ceil(grossSum*100)/100
+          if (typeof this.actualOrder.details.customer != 'undefined' && typeof this.actualOrder.details.customer.discountValue != 'undefined'){
+            grossSum -= grossSum * (this.actualOrder.details.customer.discountValue/100)
+          }
+          
+          if (this.actualOrder.details.deliveryType == 'Kurier') grossSum += 10
 
+
+          let netSum = grossSum - grossSum * (23/100)
+
+          grossSum = Math.ceil(grossSum*100)/100
+          
+          netSum = Math.ceil(netSum*100)/100
+
+          this.$store.dispatch('setAOSumGross',grossSum)
           return { gross:grossSum, net:netSum }
         }
       },

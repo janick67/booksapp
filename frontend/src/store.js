@@ -45,11 +45,19 @@ export default new Vuex.Store({
           store: {}
         },
         selectedBooks: [],
+        booksSumGross: 0,
+        sumGross: 0,
         confirmed: false
       }
     },
     setAOSelectedBooks (state, payload) {
       state.actualOrder.selectedBooks = payload
+    },
+    setAOBooksSumGross (state, payload) {
+      state.actualOrder.booksSumGross = payload
+    },
+    setAOSumGross (state, payload) {
+      state.actualOrder.sumGross = payload
     },
     setAODetails (state, payload) {
       state.actualOrder.details = Object.assign({}, state.actualOrder.details, payload)
@@ -118,6 +126,12 @@ export default new Vuex.Store({
     },
     setAODetails ({ commit }, payload) {
       commit('setAODetails', payload)
+    },
+    setAOBooksSumGross ({ commit }, payload) {
+      commit('setAOBooksSumGross', payload)
+    },
+    setAOSumGross ({ commit }, payload) {
+      commit('setAOSumGross', payload)
     },
     sendOrder ({ commit, state }) {
       commit('setLoading', true)
