@@ -44,7 +44,7 @@ export default new Vuex.Store({
           shipment: {},
           store: {}
         },
-        selectedBooks: {},
+        selectedBooks: [],
         confirmed: false
       }
     },

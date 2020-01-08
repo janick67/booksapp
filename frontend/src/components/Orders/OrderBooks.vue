@@ -29,10 +29,11 @@
     <template v-slot:item.count="{ item }">
         <v-text-field
         v-model="item.count"
+        @change="forceRerender"
           ></v-text-field>
     </template>
     <template v-slot:item.sum="{ item }">
-        {{calculatePrice(item).netto+' zł'}}
+        {{calculatePrice(item).gross+' zł'}}
     </template>
     <template v-slot:item.action="{ item }">
       <v-icon
@@ -49,6 +50,7 @@
 
 <script>
 import ModalChoose from '../Shared/ModalChoose'
+import OrderSumUpVue from './OrderSumUp.vue';
   export default {
     data: () => ({
       renderComponent:true,
@@ -87,12 +89,11 @@ import ModalChoose from '../Shared/ModalChoose'
       this.$store.dispatch('clearActualOrder')
     },
     methods: {
-      getSelectedBooks(){
-        return this.selectedBooks
-      },
       calculatePrice(book){
-        let netto = book.price * book.count
-        return {netto, gross: (netto*(123/100))}
+        let gross = book.price * book.count;
+        gross -= gross * (book.discountValue/100);
+        let net = gross - (gross*(23/100))
+        return {net, gross}
       },
       calcDiscount(){
         console.log('przeliczam rabaty');
@@ -106,6 +107,7 @@ import ModalChoose from '../Shared/ModalChoose'
           this.selectedBooks = [...this.selectedBooks,...books];
 
           this.$store.dispatch('setAOSelectedBooks',this.selectedBooks)
+          
       },
       deleteItem (item) {
         const index = this.selectedBooks.indexOf(item)
@@ -114,7 +116,8 @@ import ModalChoose from '../Shared/ModalChoose'
       forceRerender() {
         // Remove my-component from the DOM
         this.renderComponent = false;
-        
+        this.$store.dispatch('setAOSelectedBooks',this.selectedBooks)
+        this.$emit('change');
         this.$nextTick(() => {
           // Add the component back in
           this.renderComponent = true;
