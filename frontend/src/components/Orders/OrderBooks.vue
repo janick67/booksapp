@@ -107,7 +107,7 @@ import OrderSumUpVue from './OrderSumUp.vue';
           this.selectedBooks = [...this.selectedBooks,...books];
 
           this.$store.dispatch('setAOSelectedBooks',this.selectedBooks)
-  
+          this.forceRerender()
       },
       deleteItem (item) {
         const index = this.selectedBooks.indexOf(item)

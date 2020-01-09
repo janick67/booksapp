@@ -11,7 +11,7 @@ export default new Vuex.Store({
     addresses: [],
     warehouses: [],
     actualOrder: {},
-    AOResponse: {},
+    AOResponseCreateOrder: {},
     loading: false
     // user: null,
     // error: null
@@ -65,8 +65,8 @@ export default new Vuex.Store({
     setAOConfirmed (state) {
       state.actualOrder.confirmed = true
     },
-    setAOResponse (state, payload) {
-      state.AOResponse = payload
+    setAOResponseCreateOrder (state, payload) {
+      state.AOResponseCreateOrder = payload
     },
     // setUser (state, payload) {
     //   state.user = payload
@@ -142,7 +142,7 @@ export default new Vuex.Store({
         },
         body: JSON.stringify(state.actualOrder)
       }).then(res => res.json()).then((res) => {
-        commit('setResponseCreateOrder', res.res)
+        commit('setAOResponseCreateOrder', res)
         commit('setLoading', false)
       })
     }
