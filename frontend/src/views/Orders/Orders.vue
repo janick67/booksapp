@@ -1,15 +1,18 @@
 <template>
-<div> 
-    Lista zamówień
-</div>
+  <v-card class="mx-2">
+    <v-card-title>Zamówienia</v-card-title>
+    <Orders class="ma-2" />
+  </v-card>
 </template>
 
 <script>
-export default {
+import Orders from '@/components/Orders/Orders'
 
-}
+export default {
+  components: {
+    Orders
+  }
+};
 </script>
 
-<style>
-
-</style>
+<style></style>
