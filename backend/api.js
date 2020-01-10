@@ -22,7 +22,7 @@ app.use(cookieParser());
 const data = new Date();
 
 let orders = []
-setInterval(el => console.log(orders[0]),5000);
+//setInterval(el => console.log(orders[0]),5000);
 
 const db = mysql.createConnection({
   host    : 'localhost',
@@ -188,19 +188,24 @@ app.post('/api/orders',(req,res) => {
   console.log('user')
   orderObj.details.user = ifExsistElse(req.user,{id:0}) //TODO
   let order = new Order(orderObj)
-  order.writeToSql(writeSql);
+  order.writeToSql(writeSql).then(result=>{
+    res.send({err:null,res:result});
+  }).catch(err=>{return res.send({error:err,res:null})});
   orders.push(order)
 });
 
 app.get('/api/books',(req,res) => {
-  let sql =`select bo_ID id, bo_title title, bo_printhouse printHouse ,bo_ISBN isbn, bo_printdate printdate, bo_category category, bo_description description, bo_author author, bo_price price from books`
+  let sql =`select bo_ID id, bo_title title, bo_printhouse printHouse ,bo_ISBN isbn, bo_printdate printdate, bo_category category, bo_description description, bo_author author, bo_price price, di_value discountValue, di_name discountName from books
+            left join discount_elements on del_bookID = bo_id
+            left join discounts on del_discountid = di_ID and now() > di_confirmDate and now() < di_endDate`
   console.log(sql)
   sendSql(res, sql)
 });
 
 app.get('/api/customers',(req,res) => {
-  let sql =`
-  select cu_ID id,cu_company company,cu_NIP nip,cu_firstName firstName,cu_lastName lastName,cu_email email,cu_creatorID creatorID,cu_creatorTS creatorTS,cu_modTS modTS,cu_modID modID,cu_isArchival isArichval from customers`
+  let sql =`select cu_ID id,cu_company company,cu_NIP nip,cu_firstName firstName,cu_lastName lastName,cu_email email,cu_creatorID creatorID,cu_creatorTS creatorTS,cu_modTS modTS,cu_modID modID,cu_isArchival isArichval, di_value discountValue, di_name discountName from customers
+            left join discount_customer on cu_id = dc_customerid
+            left join discounts on dc_discountid = di_ID and now() > di_confirmDate and now() < di_endDate`
   console.log(sql)
   sendSql(res, sql)
 });
@@ -233,7 +238,7 @@ function writeSql(sql)
 {
   return new Promise(function(resolve, reject) {
     const query = db.query(sql, (err, result) => {
-      if (err){console.error(err)};
+      if (err){console.error(err); reject(err)};
       console.log(result);
       resolve(result)
     });
@@ -244,7 +249,7 @@ function sendSql(res,sql)
 {
   return new Promise(function(resolve, reject) {
     const query = db.query(sql, (err, result) => {
-      if (err){console.error(err);  return res.send({error:err,res:null})};
+      if (err){console.error(err); reject(err);  return res.send({error:err,res:null})};
       console.log(result);
       res.send({err:null,res:result});
       resolve(result)

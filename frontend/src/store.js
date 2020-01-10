@@ -11,7 +11,7 @@ export default new Vuex.Store({
     addresses: [],
     warehouses: [],
     actualOrder: {},
-    AOResponse: {},
+    AOResponseCreateOrder: {},
     loading: false
     // user: null,
     // error: null
@@ -44,12 +44,20 @@ export default new Vuex.Store({
           shipment: {},
           store: {}
         },
-        selectedBooks: {},
+        selectedBooks: [],
+        booksSumGross: 0,
+        sumGross: 0,
         confirmed: false
       }
     },
     setAOSelectedBooks (state, payload) {
       state.actualOrder.selectedBooks = payload
+    },
+    setAOBooksSumGross (state, payload) {
+      state.actualOrder.booksSumGross = payload
+    },
+    setAOSumGross (state, payload) {
+      state.actualOrder.sumGross = payload
     },
     setAODetails (state, payload) {
       state.actualOrder.details = Object.assign({}, state.actualOrder.details, payload)
@@ -57,8 +65,8 @@ export default new Vuex.Store({
     setAOConfirmed (state) {
       state.actualOrder.confirmed = true
     },
-    setAOResponse (state, payload) {
-      state.AOResponse = payload
+    setAOResponseCreateOrder (state, payload) {
+      state.AOResponseCreateOrder = payload
     },
     // setUser (state, payload) {
     //   state.user = payload
@@ -119,6 +127,12 @@ export default new Vuex.Store({
     setAODetails ({ commit }, payload) {
       commit('setAODetails', payload)
     },
+    setAOBooksSumGross ({ commit }, payload) {
+      commit('setAOBooksSumGross', payload)
+    },
+    setAOSumGross ({ commit }, payload) {
+      commit('setAOSumGross', payload)
+    },
     sendOrder ({ commit, state }) {
       commit('setLoading', true)
       fetch('/api/orders/', {
@@ -128,7 +142,7 @@ export default new Vuex.Store({
         },
         body: JSON.stringify(state.actualOrder)
       }).then(res => res.json()).then((res) => {
-        commit('setResponseCreateOrder', res.res)
+        commit('setAOResponseCreateOrder', res)
         commit('setLoading', false)
       })
     }
