@@ -178,9 +178,48 @@ function sprawdzRejestracja(body){
 
 app.get('/api/orders',(req,res) => {
   let sql =`select * from orders`
-  console.log(sql)
-  sendSql(res, sql)
+  loadOrdersFromSql()
+  .then(orders =>{
+    res.send({err:null,res:orders});
+  })
+  .catch(error =>{
+    res.send({err:error,res:null});
+  });
+  // console.log(sql)
+  // sendSql(res, sql)
 });
+
+function loadOrdersFromSql(id){
+  return new Promise((resolve,reject)=>{
+    let where = '';
+    if (typeof id != 'undefined'){ where = `where or_id = '${id}'`}
+    let sql = `select * from orders
+               join order_books on or_id = ob_orderid
+               ${where}`;
+     writeSql(sql).then(resp  => {
+       let orders = {};
+        resp.forEach(el=>{
+          if (typeof orders[el.or_ID] == 'undefined') orders[el.or_ID] = { details:{}, books:[] };
+          let book = {};
+          Object.keys(el).forEach(field=>{
+          if (field.substring(0,2) == 'or'){
+            orders[el.or_ID].details[field.replace('_ID','_id').substring(3)] = el[field];
+          }
+          if (field.substring(0,2) == 'ob'){
+            book[field.replace('_ID','_id').substring(3)] = el[field];
+          }
+          })
+          orders[el.or_ID].books.push(book);
+        })
+        let tab = [];
+        Object.keys(orders).forEach(el => {
+          tab.push(orders[el]);
+        })
+        resolve(tab);
+     }).catch(error => {console.error(error);reject(error);});
+   })
+}
+
 
 app.post('/api/orders',(req,res) => {
   console.log(req.body)
@@ -239,7 +278,7 @@ function writeSql(sql)
   return new Promise(function(resolve, reject) {
     const query = db.query(sql, (err, result) => {
       if (err){console.error(err); reject(err)};
-      console.log(result);
+      //console.log(result);
       resolve(result)
     });
   })
