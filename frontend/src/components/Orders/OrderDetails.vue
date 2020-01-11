@@ -27,7 +27,13 @@
                 <v-text-field v-model="autoSourceWarehouse.code" label="Magazyn" :disabled=true></v-text-field>
               </v-col>
               <v-col v-if="deliveryType=='Kurier'">
-                <ModalChoose  @submit="submitSourceWarehouse" title="Wybierz magazyn" btnText="Wybierz magazyn" :headers="sourceWarehouseHeaders" :rows="sourceWarehouses"/>
+                <ModalChoose  
+                  @submit="submitSourceWarehouse"
+                  title="Wybierz magazyn"
+                  btnText="Wybierz magazyn"
+                  :headers="sourceWarehouseHeaders"
+                  :rows="sourceWarehouses"
+                />
               </v-col>
             </v-row>
             <v-row>
@@ -45,10 +51,13 @@
                 <v-text-field v-model="showAddress" label="Adres" :disabled=true></v-text-field>
               </v-col>
               <v-col cols="12" md="4">
-                 <ModalChoose @submit="submitAddress" title="Wybierz adres" btnText="Wybierz adres" :headers="addressHeaders" :rows="addresses" ></ModalChoose>
+                 <ModalChoose @submit="submitAddress" title="Wybierz adres" btnText="Wybierz adres" 
+                 :headers="addressHeaders" :rows="addresses" ></ModalChoose>
               </v-col>
-              <v-col cols="12" md="4" >
-                <v-btn small color="primary" @click='addAddress'>Dodaj nowy</v-btn>
+              <v-col cols="13" md="5" >
+                 <ModalInput @submit="submitAddress" title="Dodaj nowy adres" btnText="Dodaj nowy adres" 
+                 :headers="addressHeaders" :rows="addAddresses" ></ModalInput>
+
               </v-col>
             </v-row>
           </v-container>
@@ -60,6 +69,7 @@
 
 <script>
 import ModalChoose from '../Shared/ModalChoose'
+import ModalInput from '../Shared/ModalInput'
 
 export default {
       data(){
@@ -93,12 +103,16 @@ export default {
        }
       },
       components:{
-        ModalChoose
+        ModalChoose, 
+        ModalInput
         },
       mounted(){
           this.$store.dispatch('loadCustomers')
           this.$store.dispatch('loadAddresses')
           this.$store.dispatch('loadWarehouses')
+          this.$store.dispatch('loadAddAddresses')
+
+          
         },
         updated(){
           this.$store.dispatch('setAODetails',{customer: this.autoCustomer, sourceWarehouse: this.autoSourceWarehouse, store: this.autoStore, address: this.address, deliveryType: this.deliveryType})
