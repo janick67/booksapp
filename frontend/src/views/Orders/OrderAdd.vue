@@ -7,11 +7,11 @@
         <v-btn color="primary" @click="makeInternal">Wewnętrzne</v-btn>
     </div>
     <div v-else>
-        <OrderBooks class="ma-2"/>
+        <OrderBooks @change="changeOrderBooks" class="ma-2"/>
         <OrderDetails class="ma-2"/>
-        <!-- <OrderSumUp class="ma-2"/> -->
+        <OrderSumUp class="ma-2"/>
     </div>
-    <v-btn color="primary" @click="nextForm" >Dalej</v-btn>
+    <v-btn color="primary" @click="nextForm" to="/orders" class="ma-2">Wyślij</v-btn>
 </div>
 </template>
 
@@ -45,6 +45,9 @@
             nextForm(){
                 this.$store.dispatch('sendOrder')
             },
+            changeOrderBooks(){
+                OrderSumUp.methods.forceRerender()
+            }
         }
     }
 </script>

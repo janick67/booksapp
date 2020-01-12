@@ -23,7 +23,7 @@ app.use(cookieParser());
 const data = new Date();
 
 let orders = []
-setInterval(el => console.log(orders[0]),5000);
+//setInterval(el => console.log(orders[0]),5000);
 
 const db = mysql.createConnection({
   host    : 'localhost',
@@ -179,9 +179,48 @@ function sprawdzRejestracja(body){
 
 app.get('/api/orders',(req,res) => {
   let sql =`select * from orders`
-  console.log(sql)
-  sendSql(res, sql)
+  loadOrdersFromSql()
+  .then(orders =>{
+    res.send({err:null,res:orders});
+  })
+  .catch(error =>{
+    res.send({err:error,res:null});
+  });
+  // console.log(sql)
+  // sendSql(res, sql)
 });
+
+function loadOrdersFromSql(id){
+  return new Promise((resolve,reject)=>{
+    let where = '';
+    if (typeof id != 'undefined'){ where = `where or_id = '${id}'`}
+    let sql = `select * from orders
+               join order_books on or_id = ob_orderid
+               ${where}`;
+     writeSql(sql).then(resp  => {
+       let orders = {};
+        resp.forEach(el=>{
+          if (typeof orders[el.or_ID] == 'undefined') orders[el.or_ID] = { details:{}, books:[] };
+          let book = {};
+          Object.keys(el).forEach(field=>{
+          if (field.substring(0,2) == 'or'){
+            orders[el.or_ID].details[field.replace('_ID','_id').substring(3)] = el[field];
+          }
+          if (field.substring(0,2) == 'ob'){
+            book[field.replace('_ID','_id').substring(3)] = el[field];
+          }
+          })
+          orders[el.or_ID].books.push(book);
+        })
+        let tab = [];
+        Object.keys(orders).forEach(el => {
+          tab.push(orders[el]);
+        })
+        resolve(tab);
+     }).catch(error => {console.error(error);reject(error);});
+   })
+}
+
 
 app.post('/api/orders',(req,res) => {
   console.log(req.body)
@@ -189,12 +228,16 @@ app.post('/api/orders',(req,res) => {
   console.log('user')
   orderObj.details.user = ifExsistElse(req.user,{id:0}) //TODO
   let order = new Order(orderObj)
-  order.writeToSql(writeSql);
+  order.writeToSql(writeSql).then(result=>{
+    res.send({err:null,res:result});
+  }).catch(err=>{return res.send({error:err,res:null})});
   orders.push(order)
 });
 
 app.get('/api/books',(req,res) => {
-  let sql =`select bo_ID id, bo_title title, bo_printhouse printHouse ,bo_ISBN isbn, bo_printdate printdate, bo_category category, bo_description description, bo_author author, bo_price price from books`
+  let sql =`select bo_ID id, bo_title title, bo_printhouse printHouse ,bo_ISBN isbn, bo_printdate printdate, bo_category category, bo_description description, bo_author author, bo_price price, di_value discountValue, di_name discountName from books
+            left join discount_elements on del_bookID = bo_id
+            left join discounts on del_discountid = di_ID and now() > di_confirmDate and now() < di_endDate`
   console.log(sql)
   sendSql(res, sql)
 });
@@ -215,8 +258,9 @@ app.post('/api/users',(req,res) => {
 });
 
 app.get('/api/customers',(req,res) => {
-  let sql =`
-  select cu_ID id,cu_company company,cu_NIP nip,cu_firstName firstName,cu_lastName lastName,cu_email email,cu_creatorID creatorID,cu_creatorTS creatorTS,cu_modTS modTS,cu_modID modID,cu_isArchival isArichval from customers`
+  let sql =`select cu_ID id,cu_company company,cu_NIP nip,cu_firstName firstName,cu_lastName lastName,cu_email email,cu_creatorID creatorID,cu_creatorTS creatorTS,cu_modTS modTS,cu_modID modID,cu_isArchival isArichval, di_value discountValue, di_name discountName from customers
+            left join discount_customer on cu_id = dc_customerid
+            left join discounts on dc_discountid = di_ID and now() > di_confirmDate and now() < di_endDate`
   console.log(sql)
   sendSql(res, sql)
 });
@@ -249,8 +293,8 @@ function writeSql(sql)
 {
   return new Promise(function(resolve, reject) {
     const query = db.query(sql, (err, result) => {
-      if (err){console.error(err)};
-      console.log(result);
+      if (err){console.error(err); reject(err)};
+      //console.log(result);
       resolve(result)
     });
   })
@@ -260,7 +304,7 @@ function sendSql(res,sql)
 {
   return new Promise(function(resolve, reject) {
     const query = db.query(sql, (err, result) => {
-      if (err){console.error(err);  return res.send({error:err,res:null})};
+      if (err){console.error(err); reject(err);  return res.send({error:err,res:null})};
       console.log(result);
       res.send({err:null,res:result});
       resolve(result)
