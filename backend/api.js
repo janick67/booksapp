@@ -11,6 +11,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const LocalStrategy = require('passport-local').Strategy;
 const Order = require('./Order.js')
+const User = require('./User.js')
 
 const app = express();
 app.use(cors());
@@ -196,6 +197,21 @@ app.get('/api/books',(req,res) => {
   let sql =`select bo_ID id, bo_title title, bo_printhouse printHouse ,bo_ISBN isbn, bo_printdate printdate, bo_category category, bo_description description, bo_author author, bo_price price from books`
   console.log(sql)
   sendSql(res, sql)
+});
+
+app.get('/api/users',(req,res) => {
+  let sql =`select * from users`
+  console.log(sql)
+  sendSql(res, sql)
+});
+app.post('/api/users',(req,res) => {
+  console.log(req.body)
+  let userObj = req.body
+  console.log('user')
+  orderObj.details.user = ifExsistElse(req.user,{id:0}) //TODO
+  let user = new User(userObj)
+  user.writeToSql(writeSql);
+  users.push(user)
 });
 
 app.get('/api/customers',(req,res) => {

@@ -6,11 +6,13 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     orders: [],
+    users: [],
     books: [],
     customers: [],
     addresses: [],
     warehouses: [],
     actualOrder: {},
+    actualUser: {},
     AOResponse: {},
     loading: false
     // user: null,
@@ -22,6 +24,9 @@ export default new Vuex.Store({
     },
     setLoadedBooks (state, payload) {
       state.books = payload
+    },
+    setLoadedUsers (state, payload) {
+      state.users = payload
     },
     setLoadedCustomers (state, payload) {
       state.customers = payload
@@ -48,11 +53,15 @@ export default new Vuex.Store({
         confirmed: false
       }
     },
+   
     setAOSelectedBooks (state, payload) {
       state.actualOrder.selectedBooks = payload
     },
     setAODetails (state, payload) {
       state.actualOrder.details = Object.assign({}, state.actualOrder.details, payload)
+    },
+    createUser (state, payload) {
+      state.actualUser.push(payload)
     },
     setAOConfirmed (state) {
       state.actualOrder.confirmed = true
@@ -96,6 +105,13 @@ export default new Vuex.Store({
         commit('setLoading', false)
       })
     },
+    loadUsers ({ commit }) {
+      commit('setLoading', true)
+      fetch('/api/users').then(res => res.json()).then((res) => {
+        commit('setLoadedUsers', res.res)
+        commit('setLoading', false)
+      })
+    },
     loadAddresses ({ commit }) {
       commit('setLoading', true)
       fetch('/api/addresses').then(res => res.json()).then((res) => {
@@ -119,6 +135,9 @@ export default new Vuex.Store({
     setAODetails ({ commit }, payload) {
       commit('setAODetails', payload)
     },
+    setAUDetails ({ commit }, payload) {
+      commit('setAUDetails', payload)
+    },
     sendOrder ({ commit, state }) {
       commit('setLoading', true)
       fetch('/api/orders/', {
@@ -129,6 +148,20 @@ export default new Vuex.Store({
         body: JSON.stringify(state.actualOrder)
       }).then(res => res.json()).then((res) => {
         commit('setResponseCreateOrder', res.res)
+        commit('setLoading', false)
+      })
+    },
+
+    sendUser ({ commit, state }) {
+      commit('setLoading', true)
+      fetch('/api/users/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(state.actualUser)
+      }).then(res => res.json()).then((res) => {
+        commit('setResponseCreateUser', res.res)
         commit('setLoading', false)
       })
     }
@@ -198,6 +231,9 @@ export default new Vuex.Store({
     customers (state) {
       return state.customers
     },
+    users (state) {
+      return state.users
+    },
     addresses (state) {
       return state.addresses
     },
@@ -206,6 +242,9 @@ export default new Vuex.Store({
     },
     actualOrder (state) {
       return state.actualOrder
+    },
+    actualUser (state) {
+      return state.actualUser
     },
     user (state) {
       return { user: 'test', store: { id: 1, name: 'Zabornia', short: 'Zabo', addressID: '10', warehouseID: '1' } }
