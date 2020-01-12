@@ -97,6 +97,7 @@ export default {
         },
       mounted(){
           this.$store.dispatch('loadCustomers')
+          this.$store.dispatch('loadStores')
           this.$store.dispatch('loadAddresses')
           this.$store.dispatch('loadWarehouses')
         },
@@ -118,7 +119,7 @@ export default {
           return this.$store.getters.warehouses; 
         },
         store(){
-          return this.$store.getters.user.store
+          return this.$store.getters.stores.filter(el => el.id == this.$store.getters.user.storeID)
         },
         autoStore(){
           if (this.store !== null && typeof this.store.name != 'undefined'){

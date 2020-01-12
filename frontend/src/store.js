@@ -10,11 +10,12 @@ export default new Vuex.Store({
     customers: [],
     addresses: [],
     warehouses: [],
+    stores: [],
     actualOrder: {},
     AOResponseCreateOrder: {},
-    loading: false
-    // user: null,
-    // error: null
+    loading: false,
+    user: null,
+    error: null
   },
   mutations: {
     setLoadedOrders (state, payload) {
@@ -31,6 +32,9 @@ export default new Vuex.Store({
     },
     setLoadedWarehouses (state, payload) {
       state.warehouses = payload
+    },
+    setLoadedStores (state, payload) {
+      state.stores = payload
     },
     clearActualOrder (state) {
       state.actualOrder = {
@@ -68,19 +72,19 @@ export default new Vuex.Store({
     setAOResponseCreateOrder (state, payload) {
       state.AOResponseCreateOrder = payload
     },
-    // setUser (state, payload) {
-    //   state.user = payload
-    //   this.dispatch('loadRows')
-    // },
+    setUser (state, payload) {
+      state.user = payload
+      localStorage.setItem('user', JSON.stringify(payload))
+    },
     setLoading (state, payload) {
       state.loading = payload
+    },
+    setError (state, payload) {
+      state.error = payload
+    },
+    clearError (state) {
+      state.error = null
     }
-    // setError (state, payload) {
-    //   state.error = payload
-    // },
-    // clearError (state) {
-    //   state.error = null
-    // }
   },
   actions: {
     loadOrders ({ commit }) {
@@ -118,6 +122,13 @@ export default new Vuex.Store({
         commit('setLoading', false)
       })
     },
+    loadStores ({ commit }) {
+      commit('setLoading', true)
+      fetch('/api/stores').then(res => res.json()).then((res) => {
+        commit('setLoadedStores', res.res)
+        commit('setLoading', false)
+      })
+    },
     clearActualOrder ({ commit }) {
       commit('clearActualOrder')
     },
@@ -145,61 +156,40 @@ export default new Vuex.Store({
         commit('setAOResponseCreateOrder', res)
         commit('setLoading', false)
       })
+    },
+    signUserIn ({ commit }, payload) {
+      commit('setLoading', true)
+      commit('clearError')
+      fetch('/signin/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      }).then(res => res.json()).then((res) => {
+        if (res.res != null && res.err == null) {
+          commit('setUser', res.res)
+          commit('setLoading', false)
+          console.log('zalogowałem')
+        } else {
+          throw res.err
+        }
+      }).catch(error => {
+        commit('setLoading', false)
+        commit('setError', error)
+        console.log(error)
+      })
+    },
+    setLocalUser ({ commit }, payload) {
+      commit('setUser', payload)
+    },
+    logout ({ commit }) {
+      fetch('/logout')
+      commit('setUser', null)
+    },
+    clearError ({ commit }) {
+      commit('clearError')
     }
-    // signUserUp ({ commit }, payload) {
-    //   commit('setLoading', true)
-    //   commit('clearError')
-    //   firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
-    //     .then(
-    //       user => {
-    //         commit('setLoading', false)
-    //         const newUser = {
-    //           id: user.uid,
-    //           email: payload.email
-    //         }
-    //         commit('setUser', newUser)
-    //       }
-    //     )
-    //     .catch(
-    //       error => {
-    //         commit('setLoading', false)
-    //         commit('setError', error)
-    //         console.log(error)
-    //       }
-    //     )
-    // },
-    // signUserIn ({ commit }, payload) {
-    //   commit('setLoading', true)
-    //   commit('clearError')
-    //   firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
-    //     .then(
-    //       user => {
-    //         commit('setLoading', false)
-    //         const newUser = {
-    //           id: user.uid,
-    //           email: payload.email
-    //         }
-    //         commit('setUser', newUser)
-    //       }
-    //     )
-    //     .catch(
-    //       error => {
-    //         commit('setLoading', false)
-    //         commit('setError', error)
-    //         console.log(error)
-    //       }
-    //     )
-    // },
-    // autoSignIn ({ commit }, payload) {
-    //   commit('setUser', { id: payload.uid, email: payload.email })
-    // },
-    // logout ({ commit }) {
-    //   firebase.auth().signOut()
-    //   commit('setUser', null)
-    // },
-    // clearError ({ commit }) {
-    //   commit('clearError')
-    // }
   },
 
   getters: {
@@ -208,6 +198,9 @@ export default new Vuex.Store({
     },
     books (state) {
       return state.books
+    },
+    stores (state) {
+      return state.stores
     },
     customers (state) {
       return state.customers
@@ -222,8 +215,8 @@ export default new Vuex.Store({
       return state.actualOrder
     },
     user (state) {
-      return { user: 'test', store: { id: 1, name: 'Zabornia', short: 'Zabo', addressID: '10', warehouseID: '1' } }
-      // return state.user
+      // return { user: 'test', store: { id: 1, name: 'Zabornia', short: 'Zabo', addressID: '10', warehouseID: '1' } }
+      return state.user
     },
     loading (state) {
       return state.loading

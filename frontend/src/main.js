@@ -15,6 +15,10 @@ new Vue({
   vuetify,
   render: h => h(App),
   created () {
-    this.$store.dispatch('loadOrders')
+    let user = JSON.parse(localStorage.getItem('user'))
+    if (typeof user !== 'undefined' && user != null) {
+      console.log('wczytałem usera')
+      this.$store.dispatch('setLocalUser', user)
+    }
   }
 }).$mount('#app')

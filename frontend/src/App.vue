@@ -16,6 +16,6 @@ export default {
   components: {
     Menu
   },
-  data () { return {} }
+  data () { return {} },
 }
 </script>

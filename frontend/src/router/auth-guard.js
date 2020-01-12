@@ -1,7 +1,6 @@
-// import store from '../store'
 
 export default (to, from, next) => {
-  next()
+  // next()
 
   if (this.$store.getters.user) {
     next()

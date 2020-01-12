@@ -117,8 +117,6 @@ export default {
   computed: {
     menuItems () {
       let menuItems = [
-        { icon: 'mdi-fountain', text: 'Wypróbuj', link: '/demo' },
-        { icon: 'mdi-face', text: 'Zarejestruj', link: '/signup' },
         { icon: 'mdi-lock-open-variant', text: 'Zaloguj', link: '/signin' }
       ]
       if (this.userIsAuthenticated) {

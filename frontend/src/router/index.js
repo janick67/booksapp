@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/views/Home.vue'
 import Signin from '@/views/Signin.vue'
-import Signup from '@/views/Signup.vue'
 import Orders from '@/views/Orders/Orders.vue'
 import OrderAdd from '@/views/Orders/OrderAdd.vue'
 import UserAdd from '@/views/Admin/UserAdd.vue'
@@ -17,7 +16,8 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: Home,
+      authGuard: AuthGuard
     },
     {
       path: '/orders',
@@ -36,11 +36,6 @@ export default new Router({
       name: 'Dodaj użytkownika',
       component: UserAdd,
       authGuard: AuthGuard
-    },
-    {
-      path: '/signup',
-      name: 'Signup',
-      component: Signup
     },
     {
       path: '/signin',
