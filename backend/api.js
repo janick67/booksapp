@@ -166,7 +166,7 @@ app.post('/signup', (req, res, next) => {
   })
 });
 
-app.get('/logout',(req, res) => {
+app.get('/logout', (req, res) => {
   req.logout();
   res.send({error:null,res:"ok"});
   res.redirect('/');
@@ -177,7 +177,7 @@ function sprawdzRejestracja(body){
   return {};
 }
 
-app.get('/api/orders',(req,res) => {
+app.get('/api/orders', (req,res) => {
   let sql =`select * from orders`
   loadOrdersFromSql()
   .then(orders =>{
@@ -187,6 +187,8 @@ app.get('/api/orders',(req,res) => {
     res.send({err:error,res:null});
   });
   // console.log(sql)
+  // sendSql(res, sql)
+  // console.log(sql, 1)
   // sendSql(res, sql)
 });
 
@@ -265,14 +267,22 @@ app.get('/api/customers',(req,res) => {
   sendSql(res, sql)
 });
 
-app.get('/api/addresses',(req,res) => {
+app.get('/api/addresses', (req,res) => {
   let sql =`SELECT ad_ID id,ad_name name,ad_address1 address1,ad_address2 address2,ad_city city,ad_postalCode postalCode,ca_customerID customerID FROM address ad
             join customeraddress ca on ca_addressid = ad_ID`
   console.log(sql)
   sendSql(res, sql)
 });
 
-app.get('/api/warehouses',(req,res) => {
+app.post('/api/addresses', (req,res) => {
+  console.log(req.body)
+  const { ad_name, ad_address1, ad_city, ad_postalCode } = req.body;
+  const sql = `INSERT INTO address (ad_name, ad_address1, ad_city, ad_postalCode)
+    VALUES ("${ad_name}","${ad_address1}","${ad_city}","${ad_postalCode}")`;
+  sendSql(res, sql);
+});
+
+app.get('/api/warehouses', (req,res) => {
   let sql =`SELECT wa_ID id,wa_code code, ad.ad_city city FROM warehouses wa
   join address ad on wa.wa_addressID = ad.ad_id`
   console.log(sql)

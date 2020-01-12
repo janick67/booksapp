@@ -91,6 +91,4 @@ import OrderShow from '@/components/Orders/OrderShow'
 }
 </script>
 
-<style>
-
-</style>
+<style></style>
