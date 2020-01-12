@@ -11,7 +11,7 @@
         <OrderDetails class="ma-2"/>
         <OrderSumUp class="ma-2"/>
     </div>
-    <v-btn color="primary" @click="nextForm" >Dalej</v-btn>
+    <v-btn color="primary" @click="nextForm" to="/orders" class="ma-2">Wyślij</v-btn>
 </div>
 </template>
 
