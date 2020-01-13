@@ -20,7 +20,7 @@
               @rerenderUser="forceRerender"
               title="Wybierz ksiażki"
               btnText="Dodaj pozycje"
-              :headers="booksHeaders"
+              :headers="headers"
               :rows="users"
             />
           </v-toolbar>

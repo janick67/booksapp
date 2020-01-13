@@ -80,7 +80,7 @@ passport.deserializeUser((id, done) => {
   //console.log(`The user id passport saved in the session file store is: ${id}`)
   db.query(`select * from users where id = "${id}"`, function (err, rows){
       //console.log('rows: ', rows);
-        done(err, rows[0]);
+       done(err, null);
   });
 });
 
@@ -285,7 +285,7 @@ app.post('/api/users', (req,res) => {
   const sql = `INSERT INTO users (us_login, us_email, us_password, us_roleID, us_storeID)
     VALUES ("${us_login}","${us_email}","${us_password}","${us_roleID}","${us_storeID}")`;
   sendSql(res, sql);
-  
+
 });
 
 app.get('/api/warehouses', (req,res) => {
