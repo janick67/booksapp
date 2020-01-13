@@ -2,50 +2,90 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/views/Home.vue'
 import Signin from '@/views/Signin.vue'
-import Signup from '@/views/Signup.vue'
 import Orders from '@/views/Orders/Orders.vue'
 import OrderAdd from '@/views/Orders/OrderAdd.vue'
 import UserAdd from '@/views/Admin/UserAdd.vue'
-import AuthGuard from './auth-guard'
+import store from '@/store.js'
 
 Vue.use(Router)
 
-export default new Router({
+let router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: Home,
+      meta: { 
+        requiresAuth: true,
+      }
     },
     {
       path: '/orders',
       name: 'Lista zamówień',
       component: Orders,
-      authGuard: AuthGuard
+      meta: { 
+        requiresAuth: true,
+      }
     },
     {
       path: '/orders/add',
       name: 'Dodaj zamówienie',
       component: OrderAdd,
-      authGuard: AuthGuard
+      meta: { 
+        requiresAuth: true,
+      }
     },
     {
-      path: '/admin/add',
+      path: '/users/add',
       name: 'Dodaj użytkownika',
       component: UserAdd,
-      authGuard: AuthGuard
-    },
-    {
-      path: '/signup',
-      name: 'Signup',
-      component: Signup
+      meta: { 
+        requiresAuth: true,
+        is_admin : true
+      }
     },
     {
       path: '/signin',
       name: 'Signin',
-      component: Signin
+      component: Signin,
+      meta: { 
+        guest: true,
+      }
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  if(to.matched.some(record => record.meta.requiresAuth)) {
+      if (store.getters.user == null) {
+          next({
+              path: '/signin',
+              params: { nextUrl: to.fullPath }
+          })
+      } else {
+          let user = store.getters.user
+          if(to.matched.some(record => record.meta.is_admin)) {
+              if(user.roleID == 1){
+                  next()
+              }
+              else{
+                  next({ path: '/'})
+              }
+          }else {
+              next()
+          }
+      }
+  } else if(to.matched.some(record => record.meta.guest)) {
+      if(store.getters.user == null){
+          next()
+      }else{
+          next({ path: '/' })
+      }
+  }else {
+      next() 
+  }
+})
+
+export default router;

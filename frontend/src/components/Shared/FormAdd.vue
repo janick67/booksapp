@@ -71,13 +71,13 @@ export default {
   
   
   computed: {
-     store() {
-      return this.$store.getters.store;
+     stores() {
+      return this.$store.getters.stores;
     },
 
     storeIdList () {
       let tab = []
-        this.store.forEach(el=>{
+        this.stores.forEach(el=>{
           tab.push(el.shortName)
           })
       return tab
@@ -86,7 +86,7 @@ export default {
   },
   created() {
     this.$store.dispatch('loadUsers');
-     this.$store.dispatch('loadStore');
+     this.$store.dispatch('loadStores');
   },
   methods: {
 
@@ -96,11 +96,10 @@ export default {
    sendUser(){
     
     const { loginValue, emailValue, passValue, roleValue, storeValue } = this;
-    let store = this.store.find(el=>{
+    let store = this.stores.find(el=>{
       return el.shortName == storeValue
       })
   
-    console.log('form add console',{ loginValue, emailValue, passValue, roleValue, storeValue:store.id })
     this.$store.dispatch('sendUser',{ loginValue, emailValue, passValue, roleValue, storeValue:store.id });
     this.dialog = false;
     this.$emit('rerenderUser')

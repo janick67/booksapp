@@ -56,7 +56,7 @@
               </v-col>
               <v-col cols="13" md="5" >
                  <ModalInput @submit="submitAddress" title="Dodaj nowy adres" btnText="Dodaj nowy adres" 
-                 :headers="addressHeaders" :rows="addAddresses" ></ModalInput>
+                 :headers="addressHeaders" :rows="addresses" ></ModalInput>
 
               </v-col>
             </v-row>
@@ -108,9 +108,9 @@ export default {
         },
       mounted(){
           this.$store.dispatch('loadCustomers')
+          this.$store.dispatch('loadStores')
           this.$store.dispatch('loadAddresses')
           this.$store.dispatch('loadWarehouses')
-          this.$store.dispatch('loadAddAddresses')
 
           
         },
@@ -132,7 +132,8 @@ export default {
           return this.$store.getters.warehouses; 
         },
         store(){
-          return this.$store.getters.user.store
+          if (this.$store.getters.user == null) return {};
+          return this.$store.getters.stores.filter(el => el.id == this.$store.getters.user.storeID)
         },
         autoStore(){
           if (this.store !== null && typeof this.store.name != 'undefined'){

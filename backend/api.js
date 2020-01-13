@@ -52,13 +52,13 @@ const sessionStore = new MySQLStore({
 passport.use(new LocalStrategy(
   (username, password, done) => {
     console.log('Inside local strategy callback')
-    db.query(`select * from users where username = "${username}"`,(err, result) => {
+    db.query(`select us_id id, us_login login, us_password password, us_roleID roleID, us_storeID storeID from users where us_login = "${username}"`,(err, result) => {
         if (err){return console.log(err)};
         const user = result[0];
         console.log('Użytkownik z Local: ',username, typeof username,password, typeof password);
         if (typeof user === 'undefined') {return done(true, false);}
-        console.log('Użytkownik z bazy: ',user.username ,typeof user.username, user.password,typeof user.password);
-        if(username == user.username && password == user.password) {
+        console.log('Użytkownik z bazy: ',user.login ,typeof user.login, user.password,typeof user.password);
+        if(username == user.login && password == user.password) {
           console.log('Local strategy returned true')
           return done(false, user)
         }else{
@@ -71,16 +71,17 @@ passport.use(new LocalStrategy(
 
 // tell passport how to serialize the user
 passport.serializeUser((user, done) => {
-  //console.log('Inside serializeUser callback. User id is save to the session file store here')
+  console.log('Inside serializeUser callback. User id is save to the session file store here')
   done(null, user.id);
 });
 
 passport.deserializeUser((id, done) => {
-//  console.log('Inside deserializeUser callback')
-  //console.log(`The user id passport saved in the session file store is: ${id}`)
-  db.query(`select * from users where id = "${id}"`, function (err, rows){
-      //console.log('rows: ', rows);
-       done(err, null);
+  console.log('Inside deserializeUser callback')
+  console.log(`The user id passport saved in the session file store is: ${id}`)
+  db.query(`select us_id id, us_login login, us_password password, us_roleID roleID, us_storeID storeID from users where us_id = "${id}"`, function (err, rows){
+      console.log('rows: ', rows);
+      if (typeof rows !== 'undefined') return  done(err, rows[0]);
+      done(err, null);
   });
 });
 
@@ -88,7 +89,7 @@ passport.deserializeUser((id, done) => {
 app.use(session({
   genid: (req) => {
     console.log('Inside the session middleware')
-  //  console.log(req.sessionID)
+    console.log(req.sessionID)
     return uuid() // use UUIDs for session IDs
   },
   store: sessionStore,
@@ -101,81 +102,83 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(function(req, res, next) {
+  console.log('wypisanie użytkownika')
     if (req.path.indexOf('.css') === -1 && req.path.indexOf('.js') === -1 ){
         console.log("\n\n\nścieżka: ", req.path);
         if (typeof req.user !== 'undefined') console.log("użytkownik: ", req.user.username);
         else console.log("Brak użytkownika");
-        // console.log('-------------------------- session -----------------------------------------');
-        // console.dir(req.sessionID);
-        // console.log('------------------------------------------------------------------------------------');
-        // console.log('-------------------------- cookies -----------------------------------------');
-        // console.dir(req.cookies);
-        // console.log('------------------------------------------------------------------------------------');
-        // console.log('-------------------------- user -----------------------------------------');
-        // console.dir(req.user);
-        // console.log('------------------------------------------------------------------------------------');
+        console.log('-------------------------- session -----------------------------------------');
+        console.dir(req.sessionID);
+        console.log('------------------------------------------------------------------------------------');
+        console.log('-------------------------- cookies -----------------------------------------');
+        console.dir(req.cookies);
+        console.log('------------------------------------------------------------------------------------');
+        console.log('-------------------------- user -----------------------------------------');
+        console.dir(req.user);
+        console.log('------------------------------------------------------------------------------------');
     }
     next();
   });
 
   app.use(function(req, res, next) {
-    // if(typeof req.user === 'undefined' && req.path.indexOf('api/') >= 0){
-    //   return res.status(404).send({error:"Najpierw się zaloguj",res:null});
-    // }
+    console.log('kontrola użytkownika')
+    if(typeof req.user === 'undefined' && req.path.indexOf('api/') >= 0){
+      console.log(req.path,'odesłałem do logowania')
+      return res.status(401).send({error:"401",res:null});
+    }
+
     // if (typeof req.user === 'undefined' && req.path.indexOf('/logowanie/') !== 0 && req.path.indexOf('/css/') !== 0 && req.path.indexOf('/js/') !== 0 && req.path.indexOf('/images/') !== 0  && req.path.indexOf('/favicon') !== 0 && req.path !== '/signin' && req.path !== '/signup')
     //   {
     //      console.log("Przekierowywuje Cie do logowania");
-    //      return  res.redirect('logowanie/index.html');
+    //      return  res.redirect('/signin');
     //   }
     //   if (typeof req.user !== 'undefined' && req.path.indexOf('/logowanie') !== -1)
     //   {
     //     console.log("Jestes juz zalogowany, po co sie logowac drugi raz?");
     //     return  res.redirect('/');
     //   }
-      next();
+    next();
   });
 
 app.post('/signin', (req, res, next) => {
+  console.log(req.body);
   console.log('Inside the new POST /login callback')
   passport.authenticate('local', (err, user, info) => {
     console.log("(err, user, info)",err, user, info);
     if (err || !user) return res.send({error:"Nie udało się uwierzytelnic",res:null});
-    //console.log('Inside passport.authenticate() callback');
-    //console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
-    ///console.log(`req.user: ${JSON.stringify(req.user)}`)
+    console.log('Inside passport.authenticate() callback');
+    console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
+    console.error(`req.user: ${JSON.stringify(req.user)}`)
     req.login(user, (err) => {
-      console.log('Inside req.login() callback')
+      console.error('Inside req.login() callback', err)
+      //console.error('Inside req.login() callback')
       console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
       console.log(`req.user: ${JSON.stringify(req.user)}`);
-      return res.send({error:null,res:"Zalogowano pomyślnie"});
+      return res.send({error:null,res:req.user});
     })
   })(req, res, next)
 });
-
-app.post('/signup', (req, res, next) => {
-  let  body = req.body;
-  const spr = sprawdzRejestracja(body);
-  if (Object.keys(spr).length > 0) return res.send({error:'Błędne dane',message:spr});
-  const sql = 'INSERT INTO users SET ?';
-  const query = db.query(sql,body, (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.send({error:err,res:null});
-    }
-      return res.send({error:null, res:'Zarejestrowano pomyślnie'})
-  })
-});
+//
+// app.post('/signup', (req, res, next) => {
+//   let  body = req.body;
+//   const spr = sprawdzRejestracja(body);
+//   if (Object.keys(spr).length > 0) return res.send({error:'Błędne dane',message:spr});
+//   const sql = 'INSERT INTO users SET ?';
+//   const query = db.query(sql,body, (err, result) => {
+//     if (err) {
+//       console.error(err);
+//       return res.send({error:err,res:null});
+//     }
+//       return res.send({error:null, res:'Zarejestrowano pomyślnie'})
+//   })
+// });
 
 app.get('/logout', (req, res) => {
   req.logout();
   res.send({error:null,res:"ok"});
-  res.redirect('/');
 });
 
 
-function sprawdzRejestracja(body){
-  return {};
-}
 
 app.get('/api/orders', (req,res) => {
   let sql =`select * from orders`
@@ -188,9 +191,114 @@ app.get('/api/orders', (req,res) => {
   });
   // console.log(sql)
   // sendSql(res, sql)
-  // console.log(sql, 1)
-  // sendSql(res, sql)
+  return 0;
 });
+
+
+app.post('/api/orders',(req,res) => {
+  //console.log(req.body)
+  let orderObj = req.body
+  //console.log('user')
+  orderObj.details.user = ifExsistElse(req.user,{id:0}) //TODO
+  let order = new Order(orderObj)
+  order.writeToSql(writeSql).then(result=>{
+    return res.send({err:null,res:result});
+  }).catch(err=>{return res.send({error:err,res:null})});
+  orders.push(order)
+  return 0;
+});
+
+app.get('/api/books',(req,res) => {
+  let sql =`select bo_ID id, bo_title title, bo_printhouse printHouse ,bo_ISBN isbn, bo_printdate printdate, bo_category category, bo_description description, bo_author author, bo_price price, di_value discountValue, di_name discountName from books
+            left join discount_elements on del_bookID = bo_id
+            left join discounts on del_discountid = di_ID and now() > di_confirmDate and now() < di_endDate`
+  //console.log(sql)
+  return sendSql(res, sql)
+});
+
+app.get('/api/users',(req,res) => {
+  let sql =`select * from users`
+  console.log(sql)
+  sendSql(res, sql)
+});
+
+
+
+app.get('/api/customers',(req,res) => {
+  let sql =`select cu_ID id,cu_company company,cu_NIP nip,cu_firstName firstName,cu_lastName lastName,cu_email email,cu_creatorID creatorID,cu_creatorTS creatorTS,cu_modTS modTS,cu_modID modID,cu_isArchival isArichval, di_value discountValue, di_name discountName from customers
+            left join discount_customer on cu_id = dc_customerid
+            left join discounts on dc_discountid = di_ID and now() > di_confirmDate and now() < di_endDate`
+  //console.log(sql)
+  return sendSql(res, sql)
+
+});
+
+app.get('/api/addresses', (req,res) => {
+  let sql =`SELECT ad_ID id,ad_name name,ad_address1 address1,ad_address2 address2,ad_city city,ad_postalCode postalCode,ca_customerID customerID FROM address ad
+            join customeraddress ca on ca_addressid = ad_ID`
+  return sendSql(res, sql)
+});
+
+app.post('/api/addresses', (req,res) => {
+  console.log(req.body)
+  const { ad_name, ad_address1, ad_city, ad_postalCode } = req.body;
+  const sql = `INSERT INTO address (ad_name, ad_address1, ad_city, ad_postalCode)
+    VALUES ("${ad_name}","${ad_address1}","${ad_city}","${ad_postalCode}")`;
+  sendSql(res, sql);
+});
+
+app.post('/api/users', (req,res) => {
+  const {us_login, us_email, us_password, us_roleID, us_storeID } = req.body;
+  const sql = `INSERT INTO users (us_login, us_email, us_password, us_roleID, us_storeID)
+    VALUES ("${us_login}","${us_email}","${us_password}","${us_roleID}","${us_storeID}")`;
+  sendSql(res, sql);
+
+});
+
+app.get('/api/warehouses', (req,res) => {
+  let sql =`SELECT wa_ID id,wa_code code, ad.ad_city city FROM warehouses wa
+  join address ad on wa.wa_addressID = ad.ad_id`
+  return sendSql(res, sql)
+});
+
+app.get('/api/stores',(req,res) => {
+  console.log('w api stores')
+  let sql =`SELECT  st_ID id,  st_name 'name',  st_shortName 'shortName',  st_addressID 'addressID',  st_warehouseID 'warehouseID' FROM  store`
+  return sendSql(res, sql)
+});
+
+app.use(express.static('../frontend/'));
+
+
+app.use(function(req, res, next) {
+ return res.status(404).send({error:'Route '+req.url+' Not found.',res:null});
+});
+
+app.listen(3000, () => console.log(aktualnaData()+'Listen on port 3000....'))
+
+
+function writeSql(sql)
+{
+  return new Promise(function(resolve, reject) {
+    const query = db.query(sql, (err, result) => {
+      if (err){console.error(err); reject(err)};
+      //console.log(result);
+      resolve(result)
+    });
+  })
+}
+
+function sendSql(res,sql)
+{
+  return new Promise(function(resolve, reject) {
+    const query = db.query(sql, (err, result) => {
+      if (err){console.error(err); reject(err);  return res.send({error:err,res:null})};
+      //console.log(result);
+      resolve(result)
+      return res.send({err:null,res:result});
+    });
+  })
+}
 
 function loadOrdersFromSql(id){
   return new Promise((resolve,reject)=>{
@@ -222,112 +330,6 @@ function loadOrdersFromSql(id){
      }).catch(error => {console.error(error);reject(error);});
    })
 }
-
-
-app.post('/api/orders',(req,res) => {
-  console.log(req.body)
-  let orderObj = req.body
-  console.log('user')
-  orderObj.details.user = ifExsistElse(req.user,{id:0}) //TODO
-  let order = new Order(orderObj)
-  order.writeToSql(writeSql).then(result=>{
-    res.send({err:null,res:result});
-  }).catch(err=>{return res.send({error:err,res:null})});
-  orders.push(order)
-});
-
-app.get('/api/books',(req,res) => {
-  let sql =`select bo_ID id, bo_title title, bo_printhouse printHouse ,bo_ISBN isbn, bo_printdate printdate, bo_category category, bo_description description, bo_author author, bo_price price, di_value discountValue, di_name discountName from books
-            left join discount_elements on del_bookID = bo_id
-            left join discounts on del_discountid = di_ID and now() > di_confirmDate and now() < di_endDate`
-  console.log(sql)
-  sendSql(res, sql)
-});
-
-app.get('/api/users',(req,res) => {
-  let sql =`select * from users`
-  console.log(sql)
-  sendSql(res, sql)
-});
-app.get('/api/store',(req,res) => {
-  let sql =`select st_ID id, st_name 'name', st_shortName shortName from store`
-  console.log(sql)
-  sendSql(res, sql)
-});
-
-
-
-app.get('/api/customers',(req,res) => {
-  let sql =`select cu_ID id,cu_company company,cu_NIP nip,cu_firstName firstName,cu_lastName lastName,cu_email email,cu_creatorID creatorID,cu_creatorTS creatorTS,cu_modTS modTS,cu_modID modID,cu_isArchival isArichval, di_value discountValue, di_name discountName from customers
-            left join discount_customer on cu_id = dc_customerid
-            left join discounts on dc_discountid = di_ID and now() > di_confirmDate and now() < di_endDate`
-  console.log(sql)
-  sendSql(res, sql)
-});
-
-app.get('/api/addresses', (req,res) => {
-  let sql =`SELECT ad_ID id,ad_name name,ad_address1 address1,ad_address2 address2,ad_city city,ad_postalCode postalCode,ca_customerID customerID FROM address ad
-            join customeraddress ca on ca_addressid = ad_ID`
-  console.log(sql)
-  sendSql(res, sql)
-});
-
-app.post('/api/addresses', (req,res) => {
-  console.log(req.body)
-  const { ad_name, ad_address1, ad_city, ad_postalCode } = req.body;
-  const sql = `INSERT INTO address (ad_name, ad_address1, ad_city, ad_postalCode)
-    VALUES ("${ad_name}","${ad_address1}","${ad_city}","${ad_postalCode}")`;
-  sendSql(res, sql);
-});
-app.post('/api/users', (req,res) => {
-  console.log('jestem tutaj',req.body)
-  const {us_login, us_email, us_password, us_roleID, us_storeID } = req.body;
-  const sql = `INSERT INTO users (us_login, us_email, us_password, us_roleID, us_storeID)
-    VALUES ("${us_login}","${us_email}","${us_password}","${us_roleID}","${us_storeID}")`;
-  sendSql(res, sql);
-
-});
-
-app.get('/api/warehouses', (req,res) => {
-  let sql =`SELECT wa_ID id,wa_code code, ad.ad_city city FROM warehouses wa
-  join address ad on wa.wa_addressID = ad.ad_id`
-  console.log(sql)
-  sendSql(res, sql)
-});
-
-app.use(express.static('../frontend/'));
-
-
-app.use(function(req, res, next) {
-  return res.status(404).send({error:'Route '+req.url+' Not found.',res:null});
-});
-
-app.listen(3000, () => console.log(aktualnaData()+'Listen on port 3000....'))
-
-
-function writeSql(sql)
-{
-  return new Promise(function(resolve, reject) {
-    const query = db.query(sql, (err, result) => {
-      if (err){console.error(err); reject(err)};
-      //console.log(result);
-      resolve(result)
-    });
-  })
-}
-
-function sendSql(res,sql)
-{
-  return new Promise(function(resolve, reject) {
-    const query = db.query(sql, (err, result) => {
-      if (err){console.error(err); reject(err);  return res.send({error:err,res:null})};
-      console.log(result);
-      res.send({err:null,res:result});
-      resolve(result)
-    });
-  })
-}
-
 
 function aktualnaData(){
   const rok = leadingZero(data.getFullYear());
