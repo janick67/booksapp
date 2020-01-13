@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -90,8 +91,12 @@ export default new Vuex.Store({
     loadOrders ({ commit }) {
       commit('setLoading', true)
       fetch('/api/orders').then(res => res.json()).then((res) => {
+        if (res.error == '401') {commit('setUser',null);     return console.log('zaloguj się ponownie')}
         commit('setLoadedOrders', res.res)
+        console.log('jest niby ok')
         commit('setLoading', false)
+      }).catch(err=>{
+        console.error(err)
       })
     },
     loadBooks ({ commit }) {
@@ -180,12 +185,13 @@ export default new Vuex.Store({
         console.log(error)
       })
     },
-    setLocalUser ({ commit }, payload) {
-      commit('setUser', payload)
+    setLocalUser ({ commit }, user) {
+      commit('setUser', user)
     },
-    logout ({ commit }) {
+    logout ({ commit }, router) {
       fetch('/logout')
       commit('setUser', null)
+      router.push('/')
     },
     clearError ({ commit }) {
       commit('clearError')

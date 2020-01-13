@@ -79,7 +79,7 @@ passport.deserializeUser((id, done) => {
   console.log(`The user id passport saved in the session file store is: ${id}`)
   db.query(`select us_id id, us_login login, us_password password, us_roleID roleID, us_storeID storeID from users where us_id = "${id}"`, function (err, rows){
       console.log('rows: ', rows);
-      if (typeof rows !== 'undefined')  done(err, rows[0]);
+      if (typeof rows !== 'undefined') return  done(err, rows[0]);
       done(err, null);
   });
 });
@@ -101,6 +101,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(function(req, res, next) {
+  console.log('wypisanie użytkownika')
     if (req.path.indexOf('.css') === -1 && req.path.indexOf('.js') === -1 ){
         console.log("\n\n\nścieżka: ", req.path);
         if (typeof req.user !== 'undefined') console.log("użytkownik: ", req.user.username);
@@ -119,9 +120,10 @@ app.use(function(req, res, next) {
   });
 
   app.use(function(req, res, next) {
+    console.log('kontrola użytkownika')
     if(typeof req.user === 'undefined' && req.path.indexOf('api/') >= 0){
       console.log(req.path,'odesłałem do logowania')
-      return res.status(401).send({error:"Najpierw się zaloguj",res:null});
+      return res.status(401).send({error:"401",res:null});
     }
 
     // if (typeof req.user === 'undefined' && req.path.indexOf('/logowanie/') !== 0 && req.path.indexOf('/css/') !== 0 && req.path.indexOf('/js/') !== 0 && req.path.indexOf('/images/') !== 0  && req.path.indexOf('/favicon') !== 0 && req.path !== '/signin' && req.path !== '/signup')
@@ -134,7 +136,7 @@ app.use(function(req, res, next) {
     //     console.log("Jestes juz zalogowany, po co sie logowac drugi raz?");
     //     return  res.redirect('/');
     //   }
-      next();
+    next();
   });
 
 app.post('/signin', (req, res, next) => {
@@ -145,9 +147,10 @@ app.post('/signin', (req, res, next) => {
     if (err || !user) return res.send({error:"Nie udało się uwierzytelnic",res:null});
     console.log('Inside passport.authenticate() callback');
     console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
-    console.log(`req.user: ${JSON.stringify(req.user)}`)
+    console.error(`req.user: ${JSON.stringify(req.user)}`)
     req.login(user, (err) => {
-      console.log('Inside req.login() callback')
+      console.error('Inside req.login() callback', err)
+      //console.error('Inside req.login() callback')
       console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
       console.log(`req.user: ${JSON.stringify(req.user)}`);
       return res.send({error:null,res:req.user});
@@ -175,9 +178,6 @@ app.get('/logout',(req, res) => {
 });
 
 
-function sprawdzRejestracja(body){
-  return {};
-}
 
 app.get('/api/orders',(req,res) => {
   let sql =`select * from orders`
@@ -237,9 +237,12 @@ app.get('/api/warehouses',(req,res) => {
 });
 
 app.get('/api/stores',(req,res) => {
+  console.log('w api stores')
   let sql =`SELECT  st_ID id,  st_name 'name',  st_shortName 'shortName',  st_addressID 'addressID',  st_warehouseID 'warehouseID' FROM  store`
   return sendSql(res, sql)
 });
+
+app.use(function(req, res, next) {console.log('moja testowa po stores')})
 
 app.use(express.static('../frontend/'));
 

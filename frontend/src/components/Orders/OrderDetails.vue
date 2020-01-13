@@ -119,6 +119,7 @@ export default {
           return this.$store.getters.warehouses; 
         },
         store(){
+          if (this.$store.getters.user == null) return {};
           return this.$store.getters.stores.filter(el => el.id == this.$store.getters.user.storeID)
         },
         autoStore(){

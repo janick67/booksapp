@@ -9,16 +9,21 @@ import MoneyFilter from './filters/money'
 Vue.filter('date', DateFilter)
 Vue.filter('money', MoneyFilter)
 
+
+let user = null;
+try {
+  user = JSON.parse(localStorage.getItem('user'));
+} catch (e) {
+  user = null;
+}
+if (typeof user !== 'undefined' && user != null) {
+  console.log('wczytałem usera',router)
+  store.dispatch('setLocalUser',{user, router})
+}
+
 new Vue({
   router,
   store,
   vuetify,
   render: h => h(App),
-  created () {
-    let user = JSON.parse(localStorage.getItem('user'))
-    if (typeof user !== 'undefined' && user != null) {
-      console.log('wczytałem usera')
-      this.$store.dispatch('setLocalUser', user)
-    }
-  }
 }).$mount('#app')

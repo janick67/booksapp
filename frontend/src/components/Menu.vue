@@ -123,7 +123,7 @@ export default {
         menuItems = [
           { icon: 'mdi-bank-transfer', text: 'Dodaj zamówienie', link: '/orders/add' },
           { icon: 'mdi-bank-transfer', text: 'Lista zamówień', link: '/orders' },
-           { icon: 'mdi-bank-transfer', text: 'Dodaj użytkownika', link: '/admin/add' },
+           { icon: 'mdi-bank-transfer', text: 'Dodaj użytkownika', link: '/users/add' },
           { icon: 'mdi-exit-to-app', text: 'Wyloguj', link: '/logout' }
         ]
       }
@@ -135,7 +135,7 @@ export default {
   },
   methods: {
     onLogout () {
-      this.$store.dispatch('logout')
+      this.$store.dispatch('logout',this.$router)
     }
   }
 }
