@@ -11,7 +11,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const LocalStrategy = require('passport-local').Strategy;
 const Order = require('./Order.js')
-const User = require('./User.js')
+
 
 const app = express();
 app.use(cors());
@@ -249,15 +249,13 @@ app.get('/api/users',(req,res) => {
   console.log(sql)
   sendSql(res, sql)
 });
-app.post('/api/users',(req,res) => {
-  console.log(req.body)
-  let userObj = req.body
-  console.log('user')
-  orderObj.details.user = ifExsistElse(req.user,{id:0}) //TODO
-  let user = new User(userObj)
-  user.writeToSql(writeSql);
-  users.push(user)
+app.get('/api/store',(req,res) => {
+  let sql =`select st_ID id, st_name 'name', st_shortName shortName from store`
+  console.log(sql)
+  sendSql(res, sql)
 });
+
+
 
 app.get('/api/customers',(req,res) => {
   let sql =`select cu_ID id,cu_company company,cu_NIP nip,cu_firstName firstName,cu_lastName lastName,cu_email email,cu_creatorID creatorID,cu_creatorTS creatorTS,cu_modTS modTS,cu_modID modID,cu_isArchival isArichval, di_value discountValue, di_name discountName from customers
@@ -280,6 +278,14 @@ app.post('/api/addresses', (req,res) => {
   const sql = `INSERT INTO address (ad_name, ad_address1, ad_city, ad_postalCode)
     VALUES ("${ad_name}","${ad_address1}","${ad_city}","${ad_postalCode}")`;
   sendSql(res, sql);
+});
+app.post('/api/users', (req,res) => {
+  console.log('jestem tutaj',req.body)
+  const {us_login, us_email, us_password, us_roleID, us_storeID } = req.body;
+  const sql = `INSERT INTO users (us_login, us_email, us_password, us_roleID, us_storeID)
+    VALUES ("${us_login}","${us_email}","${us_password}","${us_roleID}","${us_storeID}")`;
+  sendSql(res, sql);
+  
 });
 
 app.get('/api/warehouses', (req,res) => {

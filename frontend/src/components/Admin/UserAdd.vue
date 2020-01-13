@@ -17,7 +17,7 @@
            
          
             <FormAdd
-              @submit="modalSubmit"
+              @rerenderUser="forceRerender"
               title="Wybierz ksiażki"
               btnText="Dodaj pozycje"
               :headers="booksHeaders"
@@ -54,34 +54,12 @@ export default {
       },
       { text: 'Login', value: 'us_login' },
       { text: 'E-mail', value: 'us_email' },
-      { text: 'Password', value: 'us_password' },
       { text: 'RoleID', value: 'us_roleID' },
-      { text: 'StorID', value: 'us_storID' },
-      { text: 'CreatorID', value: 'us_creatorID' },
-      { text: 'CreatorTS', value: 'us_creatorTS' },
-      { text: 'ModTS', value: 'us_modTS' },
-      { text: 'ModID', value: 'us_modID' },
-      { text: 'IsArchival', value: 'us_isArchival' },
+      { text: 'StorID', value: 'us_storeID' },
       { text: 'Akcja', value: 'action', sortable: false }
     ],
-    selectedBooks: [],
-    booksHeaders: [
-      { text: '', align: 'left', sortable: false, value: 'checkbox' },
-      {
-        text: 'ID',
-        value: 'us_ID'
-      },
-      { text: 'Login', value: 'us_login' },
-      { text: 'E-mail', value: 'us_email' },
-      { text: 'Password', value: 'us_password' },
-      { text: 'RoleID', value: 'us_roleID' },
-      { text: 'StorID', value: 'us_storID' },
-      { text: 'CreatorID', value: 'us_creatorID' },
-      { text: 'CreatorTS', value: 'us_creatorTS' },
-      { text: 'ModTS', value: 'us_modTS' },
-      { text: 'ModID', value: 'us_modID' },
-      { text: 'IsArchival', value: 'us_isArchival' }
-    ]
+    
+   
   }),
   components: {
     FormAdd
@@ -102,6 +80,7 @@ export default {
     deleteItem(item) {
       const index = this.users.indexOf(item);
       this.users.splice(index, 1);
+      
     },
     forceRerender() {
       // Remove my-component from the DOM
