@@ -71,7 +71,8 @@ import OrderDetailsVue from './OrderDetails.vue';
    send(){
     
     const { trackingNumber, shipmentsId  , shipmentsStatus, shipmentsType } = this;
-     const {  orderId  } = this;
+    console.log(this.order,this.order.details.id)
+    const  orderId  = this.order.details.id;
  
     this.$store.dispatch('sendShipments',{ trackingNumber, shipmentsId, shipmentsStatus, shipmentsType }); 
    this.$store.dispatch('sendStatus',{ trackingNumber, orderId, shipmentsStatus, shipmentsType }); 
