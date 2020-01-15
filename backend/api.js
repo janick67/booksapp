@@ -255,6 +255,20 @@ app.post('/api/users', (req,res) => {
 
 });
 
+app.post('/api/shipments', (req,res) => {
+  const {si_ID,si_type, si_number, si_status } = req.body;
+  const sql = `INSERT INTO shipments (si_ID,si_type, si_number, si_status )
+    VALUES ("${si_ID}","${si_type}","${si_number}","${si_status}")`;
+  sendSql(res, sql);
+
+});
+app.post('/api/status', (req,res) => {
+  const {or_ID } = req.body;
+  const sql = `UPDATE orders SET or_status = '2' WHERE or_ID = ${or_ID}`;
+  sendSql(res, sql);
+
+});
+
 app.get('/api/warehouses', (req,res) => {
   let sql =`SELECT wa_ID id,wa_code code, ad.ad_city city FROM warehouses wa
   join address ad on wa.wa_addressID = ad.ad_id`

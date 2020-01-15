@@ -28,9 +28,6 @@
         <template v-slot:item.count="{ item }">
           <v-text-field v-model="item.count"></v-text-field>
         </template>
-        <template v-slot:item.sum="{ item }">
-          {{ calculatePrice(item).netto + ' zł' }}
-        </template>
         <template v-slot:item.action="{ item }">
           <v-icon small @click="deleteItem(item)">
             mdi-delete

@@ -54,7 +54,9 @@
                     if (typeof book == 'undefined') {console.log('nieznaleziono',orderBook.bookID); return 0;}
                     book.count = orderBook.count;
                     booksTab.push(book)
+                   
                 });
+               
                 return booksTab;
             }
         },

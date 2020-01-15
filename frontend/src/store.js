@@ -8,6 +8,8 @@ export default new Vuex.Store({
   state: {
     orders: [],
     users: [],
+    shipments: [],
+    status: [],
     books: [],
     customers: [],
     addresses: [],
@@ -34,6 +36,10 @@ export default new Vuex.Store({
     },
     setLoadedUsers (state, payload) {
       state.users = payload
+    },
+  
+    setLoadedStatus (state, payload) {
+      state.status = payload
     },
     setLoadedCustomers (state, payload) {
       state.customers = payload
@@ -80,6 +86,12 @@ export default new Vuex.Store({
     },
     createUser (state, payload) {
       state.actualUser.push(payload)
+    },
+    sendShipments (state, payload) {
+      state.shipments.push(payload)
+    },
+    sendStatus (state, payload) {
+      state.status.push(payload)
     },
     setAOConfirmed (state) {
       state.actualOrder.confirmed = true
@@ -168,9 +180,6 @@ export default new Vuex.Store({
     setAODetails ({ commit }, payload) {
       commit('setAODetails', payload)
     },
-    setAUDetails ({ commit }, payload) {
-      commit('setAUDetails', payload)
-    },
     setAOBooksSumGross ({ commit }, payload) {
       commit('setAOBooksSumGross', payload)
     },
@@ -209,7 +218,44 @@ export default new Vuex.Store({
     }).then(res => res.json()).then((res) => {
       commit('setResponseCreateUser', res.res)
       commit('setLoading', false)
-    })},        
+    })},      
+
+    sendShipments ({ commit, state },payload) {
+      const { trackingNumber, shipmentsId, shipmentsStatus ,shipmentsType} = payload;
+     
+      commit('setLoading', true)
+      fetch('/api/shipments/', {        
+        method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'si_number': trackingNumber,
+        'si_ID': shipmentsId,
+        'si_status': shipmentsStatus,
+        'si_type': shipmentsType
+        
+        })
+    }).then(res => res.json()).then((res) => {
+      
+      commit('setLoading', false)
+    })},          
+    sendStatus ({ commit, state },payload) {
+      const { orderId} = payload;
+      commit('setLoading', true)
+      fetch('/api/status/', {        
+        method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'or_ID': orderId
+        
+        })
+    }).then(res => res.json()).then((res) => {
+      
+      commit('setLoading', false)
+    })},          
     signUserIn ({ commit }, payload) {
       commit('setLoading', true)
       commit('clearError')
