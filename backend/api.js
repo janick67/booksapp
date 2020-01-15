@@ -264,7 +264,19 @@ app.post('/api/shipments', (req,res) => {
 });
 app.post('/api/status', (req,res) => {
   const {or_ID } = req.body;
-  const sql = `UPDATE orders SET or_status = '2' WHERE or_ID = ${or_ID}`;
+  const sql = `UPDATE orders SET or_status = '3' WHERE or_ID = ${or_ID}`;
+  sendSql(res, sql);
+
+});
+app.post('/api/orderStatus', (req,res) => {
+  const {or_ID } = req.body;
+  const sql = `UPDATE orders SET or_status = '4' WHERE or_ID = ${or_ID}`;
+  sendSql(res, sql);
+
+});
+app.post('/api/shipmentStatus', (req,res) => {
+  const {or_ID } = req.body;
+  const sql = `UPDATE shipments SET osi_status = 'zrealizowano' WHERE or_ID = ${or_ID}`;
   sendSql(res, sql);
 
 });

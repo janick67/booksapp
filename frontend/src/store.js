@@ -221,7 +221,7 @@ export default new Vuex.Store({
     })},      
 
     sendShipments ({ commit, state },payload) {
-      const { trackingNumber, shipmentsId, shipmentsStatus ,shipmentsType} = payload;
+      const { trackingNumber, orderId, shipmentsStatus ,shipmentsType} = payload;
      
       commit('setLoading', true)
       fetch('/api/shipments/', {        
@@ -231,7 +231,7 @@ export default new Vuex.Store({
       },
       body: JSON.stringify({
         'si_number': trackingNumber,
-        'si_ID': shipmentsId,
+        'si_ID': orderId,
         'si_status': shipmentsStatus,
         'si_type': shipmentsType
         
@@ -244,6 +244,38 @@ export default new Vuex.Store({
       const { orderId} = payload;
       commit('setLoading', true)
       fetch('/api/status/', {        
+        method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'or_ID': orderId
+        
+        })
+    }).then(res => res.json()).then((res) => {
+      
+      commit('setLoading', false)
+    })},          
+    sendOrderStatus ({ commit, state },payload) {
+      const { orderId} = payload;
+      commit('setLoading', true)
+      fetch('/api/orderStatus/', {        
+        method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'or_ID': orderId
+        
+        })
+    }).then(res => res.json()).then((res) => {
+      
+      commit('setLoading', false)
+    })},          
+    sendShipmentStatus ({ commit, state },payload) {
+      const { orderId} = payload;
+      commit('setLoading', true)
+      fetch('/api/shipmentStatus/', {        
         method: 'POST',
       headers: {
         'Content-Type': 'application/json'

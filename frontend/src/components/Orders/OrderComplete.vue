@@ -5,34 +5,38 @@
                 small
                 v-on="on"
             >
-                mdi-truck
+                mdi-check
             </v-icon>
           </template>
-          <template>
-               <v-card>
-        <v-card-title>
-          <span class="headline">Wprowadź numer przesyłki</span>
-        </v-card-title>
+      <v-card>
+        <v-card-title class="headline">Jesteś pewien, że chcesz zrealizować to zamówienie?</v-card-title>
+
         <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field label="Numer przesyłki" v-model="trackingNumber" required></v-text-field>
-              </v-col>
-            <v-col cols="12" sm="6" md="4">
-                <v-text-field label="Typ wysyłki" v-model="shipmentsType" required></v-text-field>
-              </v-col>
-            </v-row>
-          </v-container>
+        Kliknięcie przycisku "zatwierdź" spowoduje zmianę statusu zamówienia na ZREALIZOWANO.
         </v-card-text>
+
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="back">Wróć</v-btn>
-          <v-btn color="blue darken-1" text @click="send" >Zapisz</v-btn >
+
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="back"
+          >
+            Anuluj
+          </v-btn>
+
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="send"
+          >
+            Zatwierdź
+          </v-btn>
         </v-card-actions>
       </v-card>
-                </template> 
-        </v-dialog>
+    </v-dialog>
+  </v-row>
 </template>
 
 <script>
@@ -43,9 +47,9 @@ import OrderDetailsVue from './OrderDetails.vue';
         data () {
             return {
                 dialog: false,
-               trackingNumber:'',
+              
                shipmentsStatus:'w realizacji',
-               shipmentsType:''
+              
             }
         },
         computed:{
@@ -68,18 +72,17 @@ import OrderDetailsVue from './OrderDetails.vue';
       },
    send(){
     
-    const { trackingNumber, shipmentsId  , shipmentsStatus, shipmentsType } = this;
+    
     console.log(this.order,this.order.details.id)
     const  orderId  = this.order.details.id;
  
-    this.$store.dispatch('sendShipments',{ trackingNumber, orderId, shipmentsStatus, shipmentsType }); 
-   this.$store.dispatch('sendStatus',{ trackingNumber, orderId, shipmentsStatus, shipmentsType }); 
+    this.$store.dispatch('sendOrderStatus',{  orderId  }); 
+   this.$store.dispatch('sendShipmentStatus',{  orderId }); 
     this.dialog = false;
-   
     
-   
-        
    }
+   
+  
         },
     }
 </script>

@@ -8,6 +8,7 @@
         :items="orders"
         class="elevation-1"
       >
+      
         <template v-slot:item.details.customerID="{ item }">
           {{ showCustomer(item.details.customerID) }}
         </template>
@@ -24,7 +25,7 @@
           <TrackingNumber :order="item" />
         </template>
         <template v-slot:item.action2="{ item }">
-          <OrderShow :order="item" />
+          <OrderComplete :order="item" />
         </template>
       </v-data-table>
     </v-card-text>
@@ -34,11 +35,16 @@
 <script>
 import OrderShow from '@/components/Orders/OrderShow';
 import TrackingNumber from '@/components/Orders/TrackingNumber';
+import OrderComplete from '@/components/Orders/OrderComplete';
+
 
 export default {
   components: {
+  
     OrderShow,
-    TrackingNumber
+    TrackingNumber,
+    OrderComplete,
+    
   },
   data: () => ({
     renderComponent: true,
@@ -49,9 +55,9 @@ export default {
       { text: 'Status', value: 'details.status' },
       { text: 'Data utworzenia', value: 'details.createTS' },
       { text: 'Użytkownik', value: 'details.creatorID' },
-      { text: 'Akcja', value: 'action', sortable: false },
-      { text: 'Akcja1', value: 'action1', sortable: false },
-      { text: 'Akcja2', value: 'action2', sortable: false }
+      { text: 'Szczegóły zamówienia', value: 'action', sortable: false },
+      { text: 'Nadaj numer paczki', value: 'action1', sortable: false },
+      { text: 'Zrealizuj zamówienie', value: 'action2', sortable: false }
     ]
   }),
   computed: {
@@ -106,7 +112,10 @@ export default {
       )
         return '---';
       return customer.company;
-    }
+    },
+    
+    
+    
   }
 };
 </script>
