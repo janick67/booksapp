@@ -17,7 +17,7 @@ try {
   user = null;
 }
 if (typeof user !== 'undefined' && user != null) {
-  console.log('wczytałem usera')
+  //console.log('wczytałem usera')
   store.dispatch('setLocalUser',user)
 }
 

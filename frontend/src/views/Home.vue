@@ -14,12 +14,6 @@ export default {
     }
   },
   computed: {
-    orders() {
-      let tab = this.tab
-      let orders = this.$store.getters.orders
-      
-      return orders;
-    }
   }
 }
 </script>

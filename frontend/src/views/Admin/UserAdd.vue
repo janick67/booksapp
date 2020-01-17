@@ -7,8 +7,8 @@
     </div>
   </div>
 </template>
-
 <script>
+
 import UserAdd from '@/components/Admin/UserAdd';
 
 export default {

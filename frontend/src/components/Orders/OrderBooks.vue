@@ -21,7 +21,7 @@
           vertical
         ></v-divider>
         <v-spacer></v-spacer>
-        <v-btn color="primary" dark class="mb-2 mx-2" @click="calcDiscount">Przelicz rabaty</v-btn>
+        <v-btn v-if="sale" color="primary" dark class="mb-2 mx-2" @click="calcDiscount">Przelicz rabaty</v-btn>
         <ModalChoose  @submit="modalSubmit" title="Wybierz ksiażki" btnText="Dodaj pozycje" :headers="booksHeaders" :rows="books"/>
       </v-toolbar>
     </template>
@@ -54,19 +54,27 @@ import OrderSumUpVue from './OrderSumUp.vue';
     data: () => ({
       renderComponent:true,
       dialog: false,
-      headers: [
+      saleHeaders: [
         {
           text: 'Tytuł',
           value: 'title',
         },
         { text: 'Autor', value: 'author' },
         { text: 'Wydawnictwo', value: 'printHouse' },
-        { text: 'Na magazynie', value: 'stocks' },
         { text: 'Cena', value: 'price' },
         { text: 'Sztuk', value: 'count' },
         { text: 'Suma', value: 'sum' },
-        { text: 'Akcja', value: 'action', sortable: false },
-      ],
+        { text: 'Akcja', value: 'action', sortable: false },],
+      internalHeaders: [
+        {
+          text: 'Tytuł',
+          value: 'title',
+        },
+        { text: 'Autor', value: 'author' },
+        { text: 'Wydawnictwo', value: 'printHouse' },
+        { text: 'Sztuk', value: 'count' },
+        { text: 'Akcja', value: 'action', sortable: false },],
+
       selectedBooks: [],
       booksHeaders: [
           { text: '', align: 'left', sortable: false, value: 'checkbox' },
@@ -78,11 +86,17 @@ import OrderSumUpVue from './OrderSumUp.vue';
     components:{
       ModalChoose
     },
+    props:['sale'],
     computed:{
       books(){
         return this.$store.getters.books;
+      },
+      headers(){
+        if (this.sale) return this.saleHeaders;
+        return this.internalHeaders;
       }      
-    },
+   },
+
     mounted(){
       this.$store.dispatch('loadBooks')
       this.$store.dispatch('clearActualOrder')
@@ -93,10 +107,6 @@ import OrderSumUpVue from './OrderSumUp.vue';
         gross -= gross * (book.discountValue/100);
         let net = gross - (gross*(23/100))
         return {net, gross}
-      },
-      calcDiscount(){
-        console.log('przeliczam rabaty');
-        this.forceRerender();
       },
       modalSubmit(books){
           books.forEach(el => {
@@ -113,6 +123,7 @@ import OrderSumUpVue from './OrderSumUp.vue';
         this.selectedBooks.splice(index, 1)
       },
       sumUp(){
+          if (!this.sale) {this.$store.dispatch('setAOBooksSumGross',0); return 0;}
           let grossSum = 0;
           this.selectedBooks.forEach(el=>{
             let gross = el.price * el.count;
