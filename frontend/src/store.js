@@ -1,27 +1,45 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
     orders: [],
+    users: [],
+    shipments: [],
+    status: [],
     books: [],
     customers: [],
     addresses: [],
     warehouses: [],
+    stores: [],
     actualOrder: {},
+    actualUser: {},
     AOResponse: {},
-    loading: false
-    // user: null,
-    // error: null
+    responseCreateUser: {},
+    AOResponseCreateOrder: {},
+    loading: false,
+    user: null,
+    error: null
   },
   mutations: {
     setLoadedOrders (state, payload) {
       state.orders = payload
     },
+    setResponseCreateUser (state, payload) {
+      state.responseCreateUser = payload
+    },
     setLoadedBooks (state, payload) {
       state.books = payload
+    },
+    setLoadedUsers (state, payload) {
+      state.users = payload
+    },
+  
+    setLoadedStatus (state, payload) {
+      state.status = payload
     },
     setLoadedCustomers (state, payload) {
       state.customers = payload
@@ -31,6 +49,9 @@ export default new Vuex.Store({
     },
     setLoadedWarehouses (state, payload) {
       state.warehouses = payload
+    },
+    setLoadedStores (state, payload) {
+      state.stores = payload
     },
     clearActualOrder (state) {
       state.actualOrder = {
@@ -44,47 +65,72 @@ export default new Vuex.Store({
           shipment: {},
           store: {}
         },
-        selectedBooks: {},
+        selectedBooks: [],
+        booksSumGross: 0,
+        sumGross: 0,
         confirmed: false
       }
     },
+   
     setAOSelectedBooks (state, payload) {
       state.actualOrder.selectedBooks = payload
+    },
+    setAOBooksSumGross (state, payload) {
+      state.actualOrder.booksSumGross = payload
+    },
+    setAOSumGross (state, payload) {
+      state.actualOrder.sumGross = payload
     },
     setAODetails (state, payload) {
       state.actualOrder.details = Object.assign({}, state.actualOrder.details, payload)
     },
+    createUser (state, payload) {
+      state.actualUser.push(payload)
+    },
+    sendShipments (state, payload) {
+      state.shipments.push(payload)
+    },
+    sendStatus (state, payload) {
+      state.status.push(payload)
+    },
     setAOConfirmed (state) {
       state.actualOrder.confirmed = true
     },
-    setAOResponse (state, payload) {
-      state.AOResponse = payload
+    setAOResponseCreateOrder (state, payload) {
+      state.AOResponseCreateOrder = payload
     },
-    // setUser (state, payload) {
-    //   state.user = payload
-    //   this.dispatch('loadRows')
-    // },
+    setUser (state, payload) {
+      state.user = payload
+      //console.log(payload, typeof payload)
+      if (payload !== null) payload = JSON.stringify(payload)
+      localStorage.setItem('user', payload)
+    },
     setLoading (state, payload) {
       state.loading = payload
+    },
+    setError (state, payload) {
+      state.error = payload
+    },
+    clearError (state) {
+      state.error = null
     }
-    // setError (state, payload) {
-    //   state.error = payload
-    // },
-    // clearError (state) {
-    //   state.error = null
-    // }
   },
   actions: {
     loadOrders ({ commit }) {
       commit('setLoading', true)
       fetch('/api/orders').then(res => res.json()).then((res) => {
+        if (res.error == '401') {commit('setUser',null);     return console.log('zaloguj się ponownie')}
         commit('setLoadedOrders', res.res)
+        //console.log('jest niby ok')
         commit('setLoading', false)
+      }).catch(err=>{
+        console.error(err)
       })
     },
     loadBooks ({ commit }) {
       commit('setLoading', true)
       fetch('/api/books').then(res => res.json()).then((res) => {
+        if (res.error == '401') {commit('setUser',null);     return console.log('zaloguj się ponownie')}
         commit('setLoadedBooks', res.res)
         commit('setLoading', false)
       })
@@ -92,13 +138,31 @@ export default new Vuex.Store({
     loadCustomers ({ commit }) {
       commit('setLoading', true)
       fetch('/api/customers').then(res => res.json()).then((res) => {
+        if (res.error == '401') {commit('setUser',null);     return console.log('zaloguj się ponownie')}
         commit('setLoadedCustomers', res.res)
+        commit('setLoading', false)
+      })
+    },
+    loadUsers ({ commit }) {
+      commit('setLoading', true)
+      fetch('/api/users').then(res => res.json()).then((res) => {
+        if (res.error == '401') {commit('setUser',null);     return console.log('zaloguj się ponownie')}
+        commit('setLoadedUsers', res.res)
+        commit('setLoading', false)
+      })
+    },
+    loadStores ({ commit }) {
+      commit('setLoading', true)
+      fetch('/api/stores').then(res => res.json()).then((res) => {
+        if (res.error == '401') {commit('setUser',null);     return console.log('zaloguj się ponownie')}
+        commit('setLoadedStores', res.res)
         commit('setLoading', false)
       })
     },
     loadAddresses ({ commit }) {
       commit('setLoading', true)
       fetch('/api/addresses').then(res => res.json()).then((res) => {
+        if (res.error == '401') {commit('setUser',null);     return console.log('zaloguj się ponownie')}
         commit('setLoadedAddresses', res.res)
         commit('setLoading', false)
       })
@@ -106,6 +170,7 @@ export default new Vuex.Store({
     loadWarehouses ({ commit }) {
       commit('setLoading', true)
       fetch('/api/warehouses').then(res => res.json()).then((res) => {
+        if (res.error == '401') {commit('setUser',null);     return console.log('zaloguj się ponownie')}
         commit('setLoadedWarehouses', res.res)
         commit('setLoading', false)
       })
@@ -119,7 +184,16 @@ export default new Vuex.Store({
     setAODetails ({ commit }, payload) {
       commit('setAODetails', payload)
     },
-    sendOrder ({ commit, state }) {
+    setAOBooksSumGross ({ commit }, payload) {
+      commit('setAOBooksSumGross', payload)
+    },
+    setAOSumGross ({ commit }, payload) {
+      commit('setAOSumGross', payload)
+    },
+    sendOrder ({ commit, state }, payload) {
+      console.log('iam in sendorder')
+      state.actualOrder.details.sale = payload;
+      console.log(state.actualOrder)
       commit('setLoading', true)
       fetch('/api/orders/', {
         method: 'POST',
@@ -128,64 +202,133 @@ export default new Vuex.Store({
         },
         body: JSON.stringify(state.actualOrder)
       }).then(res => res.json()).then((res) => {
-        commit('setResponseCreateOrder', res.res)
+        commit('setAOResponseCreateOrder', res)
         commit('setLoading', false)
       })
+    },
+
+    sendUser ({ commit, state },payload) {
+      const { loginValue, emailValue, passValue, roleValue, storeValue } = payload;
+     
+      commit('setLoading', true)
+      fetch('/api/users/', {        method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'us_login': loginValue,
+        'us_email': emailValue,
+        'us_password': passValue,
+        'us_roleID': roleValue,
+        'us_storeID': storeValue
+        })
+    }).then(res => res.json()).then((res) => {
+      commit('setResponseCreateUser', res.res)
+      commit('setLoading', false)
+    })},      
+
+    sendShipments ({ commit, state },payload) {
+      const { trackingNumber, orderId, shipmentsStatus ,shipmentsType} = payload;
+     
+      commit('setLoading', true)
+      fetch('/api/shipments/', {        
+        method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'si_number': trackingNumber,
+        'si_ID': orderId,
+        'si_status': shipmentsStatus,
+        'si_type': shipmentsType
+        
+        })
+    }).then(res => res.json()).then((res) => {
+      
+      commit('setLoading', false)
+    })},          
+    sendStatus ({ commit, state },payload) {
+      const { orderId} = payload;
+      commit('setLoading', true)
+      fetch('/api/status/', {        
+        method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'or_ID': orderId
+        
+        })
+    }).then(res => res.json()).then((res) => {
+      
+      commit('setLoading', false)
+    })},          
+    sendOrderStatus ({ commit, state },payload) {
+      const { orderId} = payload;
+      commit('setLoading', true)
+      fetch('/api/orderStatus/', {        
+        method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'or_ID': orderId
+        
+        })
+    }).then(res => res.json()).then((res) => {
+      
+      commit('setLoading', false)
+    })},          
+    sendShipmentStatus ({ commit, state },payload) {
+      const { orderId} = payload;
+      commit('setLoading', true)
+      fetch('/api/shipmentStatus/', {        
+        method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'or_ID': orderId
+        
+        })
+    }).then(res => res.json()).then((res) => {
+      
+      commit('setLoading', false)
+    })},          
+    signUserIn ({ commit }, payload) {
+      commit('setLoading', true)
+      commit('clearError')
+      fetch('/signin/', {       
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+        body: JSON.stringify(payload)
+      }).then(res => res.json()).then((res) => {
+        if (res.res != null && res.err == null) {
+          commit('setUser', res.res)
+          commit('setLoading', false)
+          console.log('zalogowałem')
+        } else {
+          throw res.err
+        }
+      }).catch(error => {
+        commit('setLoading', false)
+        commit('setError', error)
+        console.log(error)
+      })
+    },
+    setLocalUser ({ commit }, user) {
+      commit('setUser', user)
+    },
+    logout ({ commit }, router) {
+      fetch('/logout')
+      commit('setUser', null)
+      router.push('/')
+    },
+    clearError ({ commit }) {
+      commit('clearError')
     }
-    // signUserUp ({ commit }, payload) {
-    //   commit('setLoading', true)
-    //   commit('clearError')
-    //   firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
-    //     .then(
-    //       user => {
-    //         commit('setLoading', false)
-    //         const newUser = {
-    //           id: user.uid,
-    //           email: payload.email
-    //         }
-    //         commit('setUser', newUser)
-    //       }
-    //     )
-    //     .catch(
-    //       error => {
-    //         commit('setLoading', false)
-    //         commit('setError', error)
-    //         console.log(error)
-    //       }
-    //     )
-    // },
-    // signUserIn ({ commit }, payload) {
-    //   commit('setLoading', true)
-    //   commit('clearError')
-    //   firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
-    //     .then(
-    //       user => {
-    //         commit('setLoading', false)
-    //         const newUser = {
-    //           id: user.uid,
-    //           email: payload.email
-    //         }
-    //         commit('setUser', newUser)
-    //       }
-    //     )
-    //     .catch(
-    //       error => {
-    //         commit('setLoading', false)
-    //         commit('setError', error)
-    //         console.log(error)
-    //       }
-    //     )
-    // },
-    // autoSignIn ({ commit }, payload) {
-    //   commit('setUser', { id: payload.uid, email: payload.email })
-    // },
-    // logout ({ commit }) {
-    //   firebase.auth().signOut()
-    //   commit('setUser', null)
-    // },
-    // clearError ({ commit }) {
-    //   commit('clearError')
-    // }
   },
 
   getters: {
@@ -195,8 +338,14 @@ export default new Vuex.Store({
     books (state) {
       return state.books
     },
+    stores (state) {
+      return state.stores
+    },
     customers (state) {
       return state.customers
+    },
+    users (state) {
+      return state.users
     },
     addresses (state) {
       return state.addresses
@@ -207,9 +356,11 @@ export default new Vuex.Store({
     actualOrder (state) {
       return state.actualOrder
     },
+    actualUser (state) {
+      return state.actualUser
+  },
     user (state) {
-      return { user: 'test', store: { id: 1, name: 'Zabornia', short: 'Zabo', addressID: '10', warehouseID: '1' } }
-      // return state.user
+      return state.user
     },
     loading (state) {
       return state.loading

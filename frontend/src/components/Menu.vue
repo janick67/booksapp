@@ -19,7 +19,7 @@
           active-class="notBackground"
           text
           elevation="4"
-          @click="onLogout">
+          to="/logout">
           <v-icon left dark>mdi-exit-to-app</v-icon>
           Wyloguj
         </v-btn>
@@ -75,35 +75,7 @@
     </v-navigation-drawer>
 
   </div>
-    <!-- <div>
-    <v-toolbar class="primary" dark>
-      <v-toolbar-title>
-        <v-btn class="primary" to="/">Wydatki</v-btn>
-      </v-toolbar-title>
 
-      <div class="flex-grow-1"></div>
-
-      <v-toolbar-items>
-        <v-btn
-          class="primary"
-          v-for="item in menuItems"
-          :key="item.title"
-          :to="item.link">
-          <v-icon left dark>{{ item.icon }}</v-icon>
-          {{ item.title }}
-
-        </v-btn>
-
-        <v-btn
-          class="primary"
-          v-if="userIsAuthenticated"
-          @click="onLogout">
-          <v-icon left dark>mdi-exit-to-app</v-icon>
-          logout
-        </v-btn>
-      </v-toolbar-items>
-    </v-toolbar>
-  </div> -->
 </template>
 
 <script>
@@ -117,15 +89,13 @@ export default {
   computed: {
     menuItems () {
       let menuItems = [
-        { icon: 'mdi-fountain', text: 'Wypróbuj', link: '/demo' },
-        { icon: 'mdi-face', text: 'Zarejestruj', link: '/signup' },
         { icon: 'mdi-lock-open-variant', text: 'Zaloguj', link: '/signin' }
       ]
       if (this.userIsAuthenticated) {
         menuItems = [
           { icon: 'mdi-bank-transfer', text: 'Dodaj zamówienie', link: '/orders/add' },
           { icon: 'mdi-bank-transfer', text: 'Lista zamówień', link: '/orders' },
-           { icon: 'mdi-bank-transfer', text: 'Dodaj użytkownika', link: '/admin/add' },
+           { icon: 'mdi-bank-transfer', text: 'Dodaj użytkownika', link: '/users/add' },
           { icon: 'mdi-exit-to-app', text: 'Wyloguj', link: '/logout' }
         ]
       }
@@ -135,11 +105,6 @@ export default {
       return this.$store.getters.user !== null && this.$store.getters.user !== undefined
     }
   },
-  methods: {
-    onLogout () {
-      this.$store.dispatch('logout')
-    }
-  }
 }
 </script>
 
