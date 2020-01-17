@@ -1,8 +1,7 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
 
-
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
@@ -25,35 +24,35 @@ export default new Vuex.Store({
     error: null
   },
   mutations: {
-    setLoadedOrders (state, payload) {
-      state.orders = payload
+    setLoadedOrders(state, payload) {
+      state.orders = payload;
     },
-    setResponseCreateUser (state, payload) {
-      state.responseCreateUser = payload
+    setResponseCreateUser(state, payload) {
+      state.responseCreateUser = payload;
     },
-    setLoadedBooks (state, payload) {
-      state.books = payload
+    setLoadedBooks(state, payload) {
+      state.books = payload;
     },
-    setLoadedUsers (state, payload) {
-      state.users = payload
+    setLoadedUsers(state, payload) {
+      state.users = payload;
     },
-  
-    setLoadedStatus (state, payload) {
-      state.status = payload
+
+    setLoadedStatus(state, payload) {
+      state.status = payload;
     },
-    setLoadedCustomers (state, payload) {
-      state.customers = payload
+    setLoadedCustomers(state, payload) {
+      state.customers = payload;
     },
-    setLoadedAddresses (state, payload) {
-      state.addresses = payload
+    setLoadedAddresses(state, payload) {
+      state.addresses = payload;
     },
-    setLoadedWarehouses (state, payload) {
-      state.warehouses = payload
+    setLoadedWarehouses(state, payload) {
+      state.warehouses = payload;
     },
-    setLoadedStores (state, payload) {
-      state.stores = payload
+    setLoadedStores(state, payload) {
+      state.stores = payload;
     },
-    clearActualOrder (state) {
+    clearActualOrder(state) {
       state.actualOrder = {
         details: {
           id: null,
@@ -69,26 +68,30 @@ export default new Vuex.Store({
         booksSumGross: 0,
         sumGross: 0,
         confirmed: false
-      }
+      };
     },
-   
-    setAOSelectedBooks (state, payload) {
-      state.actualOrder.selectedBooks = payload
+
+    setAOSelectedBooks(state, payload) {
+      state.actualOrder.selectedBooks = payload;
     },
-    setAOBooksSumGross (state, payload) {
-      state.actualOrder.booksSumGross = payload
+    setAOBooksSumGross(state, payload) {
+      state.actualOrder.booksSumGross = payload;
     },
-    setAOSumGross (state, payload) {
-      state.actualOrder.sumGross = payload
+    setAOSumGross(state, payload) {
+      state.actualOrder.sumGross = payload;
     },
-    setAODetails (state, payload) {
-      state.actualOrder.details = Object.assign({}, state.actualOrder.details, payload)
+    setAODetails(state, payload) {
+      state.actualOrder.details = Object.assign(
+        {},
+        state.actualOrder.details,
+        payload
+      );
     },
-    createUser (state, payload) {
-      state.actualUser.push(payload)
+    createUser(state, payload) {
+      state.actualUser.push(payload);
     },
     sendShipments (state, payload) {
-      state.shipments.push(payload)
+      state.shipments.push(payload);
     },
     sendStatus (state, payload) {
       state.status.push(payload)
@@ -116,60 +119,76 @@ export default new Vuex.Store({
     }
   },
   actions: {
-
-   
     loadOrders ({ commit }) {
       commit('setLoading', true)
-      fetch('/api/orders').then(res => res.json()).then((res) => {
-        if (res.error == '401') {commit('setUser',null);     return console.log('zaloguj się ponownie')}
-        commit('setLoadedOrders', res.res)
-        console.log('jest niby ok')
-        commit('setLoading', false)
-      }).catch(err=>{
-        console.error(err)
-      })
+      fetch('/api/orders')
+        .then(res => res.json())
+        .then(res => {
+          if (res.error == '401') {
+            commit('setUser', null)
+            return console.log('zaloguj się ponownie')
+          }
+          commit('setLoadedOrders', res.res)
+          console.log('jest niby ok')
+          commit('setLoading', false)
+        })
+        .catch(err => {
+          console.error(err)
+        })
     },
     loadBooks ({ commit }) {
       commit('setLoading', true)
-      fetch('/api/books').then(res => res.json()).then((res) => {
-        commit('setLoadedBooks', res.res)
-        commit('setLoading', false)
-      })
+      fetch('/api/books')
+        .then(res => res.json())
+        .then(res => {
+          commit('setLoadedBooks', res.res)
+          commit('setLoading', false)
+        })
     },
     loadCustomers ({ commit }) {
       commit('setLoading', true)
-      fetch('/api/customers').then(res => res.json()).then((res) => {
-        commit('setLoadedCustomers', res.res)
-        commit('setLoading', false)
-      })
+      fetch('/api/customers')
+        .then(res => res.json())
+        .then(res => {
+          commit('setLoadedCustomers', res.res)
+          commit('setLoading', false)
+        })
     },
     loadUsers ({ commit }) {
       commit('setLoading', true)
-      fetch('/api/users').then(res => res.json()).then((res) => {
-        commit('setLoadedUsers', res.res)
-        commit('setLoading', false)
-      })
+      fetch('/api/users')
+        .then(res => res.json())
+        .then(res => {
+          commit('setLoadedUsers', res.res)
+          commit('setLoading', false)
+        })
     },
     loadStores ({ commit }) {
       commit('setLoading', true)
-      fetch('/api/stores').then(res => res.json()).then((res) => {
-        commit('setLoadedStores', res.res)
-        commit('setLoading', false)
-      })
+      fetch('/api/stores')
+        .then(res => res.json())
+        .then(res => {
+          commit('setLoadedStores', res.res)
+          commit('setLoading', false)
+        })
     },
     loadAddresses ({ commit }) {
       commit('setLoading', true)
-      fetch('/api/addresses').then(res => res.json()).then((res) => {
-        commit('setLoadedAddresses', res.res)
-        commit('setLoading', false)
-      })
+      fetch('/api/addresses')
+        .then(res => res.json())
+        .then(res => {
+          commit('setLoadedAddresses', res.res)
+          commit('setLoading', false)
+        })
     },
     loadWarehouses ({ commit }) {
       commit('setLoading', true)
-      fetch('/api/warehouses').then(res => res.json()).then((res) => {
-        commit('setLoadedWarehouses', res.res)
-        commit('setLoading', false)
-      })
+      fetch('/api/warehouses')
+        .then(res => res.json())
+        .then(res => {
+          commit('setLoadedWarehouses', res.res)
+          commit('setLoading', false)
+        })
     },
     clearActualOrder ({ commit }) {
       commit('clearActualOrder')
@@ -194,172 +213,214 @@ export default new Vuex.Store({
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(state.actualOrder)
-      }).then(res => res.json()).then((res) => {
-        commit('setAOResponseCreateOrder', res)
-        commit('setLoading', false)
       })
-    },
-
-    sendUser ({ commit, state },payload) {
-      const { loginValue, emailValue, passValue, roleValue, storeValue } = payload;
-     
-      commit('setLoading', true)
-      fetch('/api/users/', {        method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        'us_login': loginValue,
-        'us_email': emailValue,
-        'us_password': passValue,
-        'us_roleID': roleValue,
-        'us_storeID': storeValue
-        })
-    }).then(res => res.json()).then((res) => {
-      commit('setResponseCreateUser', res.res)
-      commit('setLoading', false)
-    })},      
-
-    sendShipments ({ commit, state },payload) {
-      const { trackingNumber, orderId, shipmentsStatus ,shipmentsType} = payload;
-     
-      commit('setLoading', true)
-      fetch('/api/shipments/', {        
-        method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        'si_number': trackingNumber,
-        'si_ID': orderId,
-        'si_status': shipmentsStatus,
-        'si_type': shipmentsType
-        
-        })
-    }).then(res => res.json()).then((res) => {
-      
-      commit('setLoading', false)
-    })},          
-    sendStatus ({ commit, state },payload) {
-      const { orderId} = payload;
-      commit('setLoading', true)
-      fetch('/api/status/', {        
-        method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        'or_ID': orderId
-        
-        })
-    }).then(res => res.json()).then((res) => {
-      
-      commit('setLoading', false)
-    })},          
-    sendOrderStatus ({ commit, state },payload) {
-      const { orderId} = payload;
-      commit('setLoading', true)
-      fetch('/api/orderStatus/', {        
-        method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        'or_ID': orderId
-        
-        })
-    }).then(res => res.json()).then((res) => {
-      
-      commit('setLoading', false)
-    })},          
-    sendShipmentStatus ({ commit, state },payload) {
-      const { orderId} = payload;
-      commit('setLoading', true)
-      fetch('/api/shipmentStatus/', {        
-        method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        'or_ID': orderId
-        
-        })
-    }).then(res => res.json()).then((res) => {
-      
-      commit('setLoading', false)
-    })},          
-    signUserIn ({ commit }, payload) {
-      commit('setLoading', true)
-      commit('clearError')
-      fetch('/signin/', {       
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-        body: JSON.stringify(payload)
-      }).then(res => res.json()).then((res) => {
-        if (res.res != null && res.err == null) {
-          commit('setUser', res.res)
+        .then(res => res.json())
+        .then(res => {
+          commit('setAOResponseCreateOrder', res)
           commit('setLoading', false)
-          console.log('zalogowałem')
-        } else {
-          throw res.err
-        }
-      }).catch(error => {
-        commit('setLoading', false)
-        commit('setError', error)
-        console.log(error)
+        })
+    },
+
+    sendUser ({ commit, state }, payload) {
+      const {
+        loginValue,
+        emailValue,
+        passValue,
+        roleValue,
+        storeValue
+      } = payload
+
+      commit('setLoading', true)
+      fetch('/api/users/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          us_login: loginValue,
+          us_email: emailValue,
+          us_password: passValue,
+          us_roleID: roleValue,
+          us_storeID: storeValue
+        })
       })
+        .then(res => res.json())
+        .then(res => {
+          commit('setResponseCreateUser', res.res)
+          commit('setLoading', false)
+        })
     },
-    setLocalUser ({ commit }, user) {
-      commit('setUser', user)
+    deleteUser ({ commit, state }, payload) {
+      const { userID } = payload
+      commit('setLoading', true)
+      fetch('/api/deleteUser/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          us_ID: userID
+        })
+      })
+        .then(res => res.json())
+        .then(res => {
+          commit('setResponseCreateUser', res.res)
+          commit('setLoading', false)
+        })
     },
-    logout ({ commit }, router) {
-      fetch('/logout')
-      commit('setUser', null)
-      router.push('/')
+
+    sendShipments ({ commit, state }, payload) {
+      const {
+        trackingNumber,
+        orderId,
+        shipmentsStatus,
+        shipmentsType
+      } = payload
+
+      commit('setLoading', true)
+      fetch('/api/shipments/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          si_number: trackingNumber,
+          si_ID: orderId,
+          si_status: shipmentsStatus,
+          si_type: shipmentsType
+        })
+      })
+        .then(res => res.json())
+        .then(res => {
+          commit('setLoading', false)
+        })
     },
-    clearError ({ commit }) {
-      commit('clearError')
+    sendStatus ({ commit, state }, payload) {
+      const { orderId } = payload
+      commit('setLoading', true)
+      fetch('/api/status/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          or_ID: orderId
+        })
+      })
+        .then(res => res.json())
+        .then(res => {
+          commit('setLoading', false)
+        })
+    },
+    sendOrderStatus ({ commit, state }, payload) {
+      const { orderId } = payload
+      commit('setLoading', true)
+      fetch('/api/orderStatus/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          or_ID: orderId
+        })
+      })
+        .then(res => res.json())
+        .then(res => {
+          commit('setLoading', false)
+        })
+    },
+    sendShipmentStatus ({ commit, state }, payload) {
+      const { orderId } = payload
+      commit('setLoading', true)
+      fetch('/api/shipmentStatus/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          or_ID: orderId
+        })
+      })
+        .then(res => res.json())
+        .then(res => {
+          commit('setLoading', false)
+        });
+    },
+    signUserIn({ commit }, payload) {
+      commit('setLoading', true);
+      commit('clearError');
+      fetch('/signin/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+        .then(res => res.json())
+        .then(res => {
+          if (res.res != null && res.err == null) {
+            commit('setUser', res.res)
+            commit('setLoading', false)
+            console.log('zalogowałem')
+          } else {
+            throw res.err;
+          }
+        })
+        .catch(error => {
+          commit('setLoading', false)
+          commit('setError', error)
+          console.log(error)
+        });
+    },
+    setLocalUser({ commit }, user) {
+      commit('setUser', user);
+    },
+    logout({ commit }, router) {
+      fetch('/logout');
+      commit('setUser', null);
+      router.push('/');
+    },
+    clearError({ commit }) {
+      commit('clearError');
     }
   },
 
   getters: {
-    orders (state) {
-      return state.orders
+    orders(state) {
+      return state.orders;
     },
-    books (state) {
-      return state.books
+    books(state) {
+      return state.books;
     },
-    stores (state) {
-      return state.stores
+    stores(state) {
+      return state.stores;
     },
-    customers (state) {
-      return state.customers
+    customers(state) {
+      return state.customers;
     },
-    users (state) {
-      return state.users
+    users(state) {
+      return state.users;
     },
-    addresses (state) {
-      return state.addresses
+    addresses(state) {
+      return state.addresses;
     },
-    warehouses (state) {
-      return state.warehouses
+    warehouses(state) {
+      return state.warehouses;
     },
-    actualOrder (state) {
-      return state.actualOrder
+    actualOrder(state) {
+      return state.actualOrder;
     },
-    actualUser (state) {
-      return state.actualUser
-  },
-    user (state) {
-      return state.user
+    actualUser(state) {
+      return state.actualUser;
     },
-    loading (state) {
-      return state.loading
+    user(state) {
+      return state.user;
     },
-    error (state) {
-      return state.error
+    loading(state) {
+      return state.loading;
+    },
+    error(state) {
+      return state.error;
     }
   }
 })

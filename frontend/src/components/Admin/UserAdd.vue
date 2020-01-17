@@ -13,25 +13,21 @@
           <v-toolbar flat color="white">
             <v-toolbar-title>Użytkownicy w systemie</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
-            <v-spacer></v-spacer>
-           
-         
+            <v-spacer> </v-spacer>
             <FormAdd
               @rerenderUser="forceRerender"
-              title="Wybierz ksiażki"
+              title="Dodaj pozycje"
               btnText="Dodaj pozycje"
               :headers="headers"
               :rows="users"
             />
           </v-toolbar>
         </template>
-        <template v-slot:item.count="{ item }">
+        <template v-slot:item.count = "{ item }">
           <v-text-field v-model="item.count"></v-text-field>
         </template>
         <template v-slot:item.action="{ item }">
-          <v-icon small @click="deleteItem(item)">
-            mdi-delete
-          </v-icon>
+          <DeleteUser :user="item" />
         </template>
       </v-data-table>
     </v-card-text>
@@ -39,7 +35,8 @@
 </template>
 
 <script>
-import FormAdd from '../Shared/FormAdd';
+import FormAdd from '../Shared/FormAdd'
+import DeleteUser from '@/components/Admin/DeleteUser'
 export default {
   data: () => ({
     renderComponent: true,
@@ -54,42 +51,32 @@ export default {
       { text: 'RoleID', value: 'us_roleID' },
       { text: 'StorID', value: 'us_storeID' },
       { text: 'Akcja', value: 'action', sortable: false }
-    ],
-    
-   
+    ]
   }),
   components: {
-    FormAdd
+    FormAdd,
+    DeleteUser
   },
   computed: {
-    users() {
-      return this.$store.getters.users;
-    },
-    books() {
-      return this.$store.getters.books;
+    users () {
+      return this.$store.getters.users
     }
   },
-  created() {
-    this.$store.dispatch('loadUsers');
-     this.$store.dispatch('loadBooks');
+  created () {
+    this.$store.dispatch('loadUsers')
   },
   methods: {
-    deleteItem(item) {
-      const index = this.users.indexOf(item);
-      this.users.splice(index, 1);
-      
-    },
-    forceRerender() {
+    forceRerender () {
       // Remove my-component from the DOM
-      this.renderComponent = false;
+      this.renderComponent = false
 
       this.$nextTick(() => {
         // Add the component back in
-        this.renderComponent = true;
-      });
+        this.renderComponent = true
+      })
     }
   }
-};
+}
 </script>
 
 <style></style>

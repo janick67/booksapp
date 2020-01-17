@@ -16,7 +16,6 @@
                 <v-text-field label="Login" v-model="loginValue" required></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="4">
-        
                 <v-text-field label="Hasło" v-model="passValue"></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="4">
@@ -56,24 +55,21 @@
 <script>
 
 export default {
-  data() {
-    
+  data () {
     return {
-       dialog: false,
-    loginValue:'',
-    passValue:'',
-    emailValue:'',
-    roleValue:'',
-    storeValue:''
-   
+      dialog: false,
+      loginValue: '',
+      passValue: '',
+      emailValue: '',
+      roleValue: '',
+      storeValue: ''
     }
   },
-  
-  
   computed: {
-     stores() {
-      return this.$store.getters.stores;
+    stores() {
+      return this.$store.getters.stores
     },
+    
 
     storeIdList () {
       let tab = []

@@ -17,41 +17,41 @@ let router = new Router({
       path: '/',
       name: 'home',
       component: Home,
-      meta: { 
-        requiresAuth: true,
+      meta: {
+        requiresAuth: true
       }
     },
     {
       path: '/orders',
       name: 'Lista zamówień',
       component: Orders,
-      meta: { 
-        requiresAuth: true,
+      meta: {
+        requiresAuth: true
       }
     },
     {
       path: '/orders/add',
       name: 'Dodaj zamówienie',
       component: OrderAdd,
-      meta: { 
-        requiresAuth: true,
+      meta: {
+        requiresAuth: true
       }
     },
     {
       path: '/users/add',
       name: 'Dodaj użytkownika',
       component: UserAdd,
-      meta: { 
+      meta: {
         requiresAuth: true,
-        is_admin : true
+        is_admin: true
       }
     },
     {
       path: '/signin',
       name: 'Signin',
       component: Signin,
-      meta: { 
-        guest: true,
+      meta: {
+        guest: true
       }
     }
   ]

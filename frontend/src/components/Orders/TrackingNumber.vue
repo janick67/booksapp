@@ -31,39 +31,34 @@
           <v-btn color="blue darken-1" text @click="send" >Zapisz</v-btn >
         </v-card-actions>
       </v-card>
-                </template> 
+      </template>
         </v-dialog>
 </template>
 
 <script>
-import OrderShowVue from './OrderShow.vue';
-import OrderDetailsVue from './OrderDetails.vue';
-
-    export default {
-        data () {
-            return {
-                dialog: false,
-               trackingNumber:'',
-               shipmentsStatus:'w realizacji',
-               shipmentsType:''
-            }
-        },
-        computed:{
-           orders(){
-        return this.$store.getters.orders;
-           }
-      }, 
-           
-        created(){
-            
-             this.$store.dispatch('loadOrders')
-        },
-        props:['order'],
-        methods:{
-            close () {
-                this.dialog = false
-            },
-            back(){
+export default {
+  data () {
+    return {
+      dialog: false,
+      trackingNumber: '',
+      shipmentsStatus: 'w realizacji',
+      shipmentsType: ''
+    }
+  },
+  computed: {
+    orders () {
+      return this.$store.getters.orders
+    }
+  },
+  created () {
+    this.$store.dispatch('loadOrders')
+  },
+  props: ['order'],
+  methods: {
+    close () {
+      this.dialog = false
+    },
+    back() {
       this.dialog=false;
       },
    send(){

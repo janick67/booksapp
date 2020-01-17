@@ -254,6 +254,13 @@ app.post('/api/users', (req,res) => {
   sendSql(res, sql);
 
 });
+app.post('/api/deleteUser', (req,res) => {
+  const {us_ID } = req.body;
+  const sql = `DELETE FROM users WHERE us_ID = ${us_ID}`;
+  sendSql(res, sql);
+
+});
+
 
 app.post('/api/shipments', (req,res) => {
   const {si_ID,si_type, si_number, si_status } = req.body;

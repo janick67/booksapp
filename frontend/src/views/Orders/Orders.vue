@@ -113,11 +113,8 @@ export default {
         return '---';
       return customer.company;
     },
-    
-    
-    
   }
-};
+}
 </script>
 
 <style></style>

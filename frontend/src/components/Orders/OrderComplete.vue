@@ -53,40 +53,30 @@ import OrderDetailsVue from './OrderDetails.vue';
             }
         },
         computed:{
-           orders(){
-        return this.$store.getters.orders;
-           }
-      }, 
-           
-        created(){
-            
-             this.$store.dispatch('loadOrders')
-        },
-        props:['order'],
-        methods:{
-            close () {
-                this.dialog = false
-            },
-            back(){
-      this.dialog=false;
-      },
-   send(){
-    
-    
-    console.log(this.order,this.order.details.id)
-    const  orderId  = this.order.details.id;
- 
-    this.$store.dispatch('sendOrderStatus',{  orderId  }); 
-   this.$store.dispatch('sendShipmentStatus',{  orderId }); 
-    this.dialog = false;
-    
-   }
-   
-  
-        },
+           orders (){
+        return this.$store.getters.orders
     }
+  },
+  created () {
+    this.$store.dispatch('loadOrders')
+  },
+  props: ['order'],
+  methods: {
+    close () {
+      this.dialog = false
+    },
+    back () {
+      this.dialog = false
+    },
+    send () {
+      console.log(this.order, this.order.details.id)
+      const orderId = this.order.details.id
+      this.$store.dispatch('sendOrderStatus', { orderId })
+      this.$store.dispatch('sendShipmentStatus', { orderId })
+      this.dialog = false
+    }
+  }
+}
 </script>
 
-<style>
-
-</style>
+<style></style>
