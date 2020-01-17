@@ -5,6 +5,7 @@ import Signin from '@/views/Signin.vue'
 import Orders from '@/views/Orders/Orders.vue'
 import OrderAdd from '@/views/Orders/OrderAdd.vue'
 import UserAdd from '@/views/Admin/UserAdd.vue'
+import Logout from '@/views/Logout.vue'
 import store from '@/store.js'
 
 Vue.use(Router)
@@ -52,6 +53,14 @@ let router = new Router({
       component: Signin,
       meta: { 
         guest: true,
+      }
+    },
+    {
+      path: '/logout',
+      name: 'Logout',
+      component: Logout,
+      meta: { 
+        requiresAuth: true
       }
     }
   ]

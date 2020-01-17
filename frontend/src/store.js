@@ -89,7 +89,7 @@ export default new Vuex.Store({
     },
     setUser (state, payload) {
       state.user = payload
-      console.log(payload, typeof payload)
+      //console.log(payload, typeof payload)
       if (payload !== null) payload = JSON.stringify(payload)
       localStorage.setItem('user', payload)
     },
@@ -104,14 +104,12 @@ export default new Vuex.Store({
     }
   },
   actions: {
-
-   
     loadOrders ({ commit }) {
       commit('setLoading', true)
       fetch('/api/orders').then(res => res.json()).then((res) => {
         if (res.error == '401') {commit('setUser',null);     return console.log('zaloguj się ponownie')}
         commit('setLoadedOrders', res.res)
-        console.log('jest niby ok')
+        //console.log('jest niby ok')
         commit('setLoading', false)
       }).catch(err=>{
         console.error(err)
@@ -120,6 +118,7 @@ export default new Vuex.Store({
     loadBooks ({ commit }) {
       commit('setLoading', true)
       fetch('/api/books').then(res => res.json()).then((res) => {
+        if (res.error == '401') {commit('setUser',null);     return console.log('zaloguj się ponownie')}
         commit('setLoadedBooks', res.res)
         commit('setLoading', false)
       })
@@ -127,6 +126,7 @@ export default new Vuex.Store({
     loadCustomers ({ commit }) {
       commit('setLoading', true)
       fetch('/api/customers').then(res => res.json()).then((res) => {
+        if (res.error == '401') {commit('setUser',null);     return console.log('zaloguj się ponownie')}
         commit('setLoadedCustomers', res.res)
         commit('setLoading', false)
       })
@@ -134,6 +134,7 @@ export default new Vuex.Store({
     loadUsers ({ commit }) {
       commit('setLoading', true)
       fetch('/api/users').then(res => res.json()).then((res) => {
+        if (res.error == '401') {commit('setUser',null);     return console.log('zaloguj się ponownie')}
         commit('setLoadedUsers', res.res)
         commit('setLoading', false)
       })
@@ -141,6 +142,7 @@ export default new Vuex.Store({
     loadStores ({ commit }) {
       commit('setLoading', true)
       fetch('/api/stores').then(res => res.json()).then((res) => {
+        if (res.error == '401') {commit('setUser',null);     return console.log('zaloguj się ponownie')}
         commit('setLoadedStores', res.res)
         commit('setLoading', false)
       })
@@ -148,6 +150,7 @@ export default new Vuex.Store({
     loadAddresses ({ commit }) {
       commit('setLoading', true)
       fetch('/api/addresses').then(res => res.json()).then((res) => {
+        if (res.error == '401') {commit('setUser',null);     return console.log('zaloguj się ponownie')}
         commit('setLoadedAddresses', res.res)
         commit('setLoading', false)
       })
@@ -155,6 +158,7 @@ export default new Vuex.Store({
     loadWarehouses ({ commit }) {
       commit('setLoading', true)
       fetch('/api/warehouses').then(res => res.json()).then((res) => {
+        if (res.error == '401') {commit('setUser',null);     return console.log('zaloguj się ponownie')}
         commit('setLoadedWarehouses', res.res)
         commit('setLoading', false)
       })
@@ -177,7 +181,10 @@ export default new Vuex.Store({
     setAOSumGross ({ commit }, payload) {
       commit('setAOSumGross', payload)
     },
-    sendOrder ({ commit, state }) {
+    sendOrder ({ commit, state }, payload) {
+      console.log('iam in sendorder')
+      state.actualOrder.details.sale = payload;
+      console.log(state.actualOrder)
       commit('setLoading', true)
       fetch('/api/orders/', {
         method: 'POST',

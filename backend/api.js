@@ -23,6 +23,7 @@ app.use(cookieParser());
 const data = new Date();
 
 let orders = []
+let debugauth = false;
 //setInterval(el => console.log(orders[0]),5000);
 
 const db = mysql.createConnection({
@@ -51,18 +52,18 @@ const sessionStore = new MySQLStore({
 // configure passport.js to use the local strategy
 passport.use(new LocalStrategy(
   (username, password, done) => {
-    console.log('Inside local strategy callback')
+    if (debugauth) console.log('Inside local strategy callback')
     db.query(`select us_id id, us_login login, us_password password, us_roleID roleID, us_storeID storeID from users where us_login = "${username}"`,(err, result) => {
         if (err){return console.log(err)};
         const user = result[0];
-        console.log('Użytkownik z Local: ',username, typeof username,password, typeof password);
+        if (debugauth) console.log('Użytkownik z Local: ',username, typeof username,password, typeof password);
         if (typeof user === 'undefined') {return done(true, false);}
-        console.log('Użytkownik z bazy: ',user.login ,typeof user.login, user.password,typeof user.password);
+        if (debugauth) console.log('Użytkownik z bazy: ',user.login ,typeof user.login, user.password,typeof user.password);
         if(username == user.login && password == user.password) {
-          console.log('Local strategy returned true')
+          if (debugauth) console.log('Local strategy returned true')
           return done(false, user)
         }else{
-          console.log('Local strategy returned false')
+          if (debugauth) console.log('Local strategy returned false')
           return done(true, false);
         }
       });
@@ -71,15 +72,15 @@ passport.use(new LocalStrategy(
 
 // tell passport how to serialize the user
 passport.serializeUser((user, done) => {
-  console.log('Inside serializeUser callback. User id is save to the session file store here')
+  if (debugauth) console.log('Inside serializeUser callback. User id is save to the session file store here')
   done(null, user.id);
 });
 
 passport.deserializeUser((id, done) => {
-  console.log('Inside deserializeUser callback')
-  console.log(`The user id passport saved in the session file store is: ${id}`)
+  if (debugauth) console.log('Inside deserializeUser callback')
+  if (debugauth) console.log(`The user id passport saved in the session file store is: ${id}`)
   db.query(`select us_id id, us_login login, us_password password, us_roleID roleID, us_storeID storeID from users where us_id = "${id}"`, function (err, rows){
-      console.log('rows: ', rows);
+      if (debugauth) console.log('rows: ', rows);
       if (typeof rows !== 'undefined') return  done(err, rows[0]);
       done(err, null);
   });
@@ -102,8 +103,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(function(req, res, next) {
-  console.log('wypisanie użytkownika')
+  if (debugauth) console.log('wypisanie użytkownika')
     if (req.path.indexOf('.css') === -1 && req.path.indexOf('.js') === -1 ){
+      if (debugauth) {
         console.log("\n\n\nścieżka: ", req.path);
         if (typeof req.user !== 'undefined') console.log("użytkownik: ", req.user.username);
         else console.log("Brak użytkownika");
@@ -116,15 +118,16 @@ app.use(function(req, res, next) {
         console.log('-------------------------- user -----------------------------------------');
         console.dir(req.user);
         console.log('------------------------------------------------------------------------------------');
+      }
     }
     next();
   });
 
   app.use(function(req, res, next) {
-    console.log('kontrola użytkownika')
+    if (debugauth) console.log('kontrola użytkownika')
     if(typeof req.user === 'undefined' && req.path.indexOf('api/') >= 0){
-      console.log(req.path,'odesłałem do logowania')
-      return res.status(401).send({error:"401",res:null});
+      if (debugauth) console.log(req.path,'odesłałem do logowania')
+      return res.send({error:"401",res:null});
     }
 
     // if (typeof req.user === 'undefined' && req.path.indexOf('/logowanie/') !== 0 && req.path.indexOf('/css/') !== 0 && req.path.indexOf('/js/') !== 0 && req.path.indexOf('/images/') !== 0  && req.path.indexOf('/favicon') !== 0 && req.path !== '/signin' && req.path !== '/signup')
@@ -141,19 +144,19 @@ app.use(function(req, res, next) {
   });
 
 app.post('/signin', (req, res, next) => {
-  console.log(req.body);
-  console.log('Inside the new POST /login callback')
+  if (debugauth) console.log(req.body);
+  if (debugauth) console.log('Inside the new POST /login callback')
   passport.authenticate('local', (err, user, info) => {
-    console.log("(err, user, info)",err, user, info);
+    if (debugauth) console.log("(err, user, info)",err, user, info);
     if (err || !user) return res.send({error:"Nie udało się uwierzytelnic",res:null});
-    console.log('Inside passport.authenticate() callback');
-    console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
-    console.error(`req.user: ${JSON.stringify(req.user)}`)
+    if (debugauth) console.log('Inside passport.authenticate() callback');
+    if (debugauth) console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
+    if (debugauth) console.error(`req.user: ${JSON.stringify(req.user)}`)
     req.login(user, (err) => {
-      console.error('Inside req.login() callback', err)
+      if (debugauth) console.error('Inside req.login() callback', err)
       //console.error('Inside req.login() callback')
-      console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
-      console.log(`req.user: ${JSON.stringify(req.user)}`);
+      if (debugauth) console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
+      if (debugauth) console.log(`req.user: ${JSON.stringify(req.user)}`);
       return res.send({error:null,res:req.user});
     })
   })(req, res, next)
@@ -196,9 +199,9 @@ app.get('/api/orders', (req,res) => {
 
 
 app.post('/api/orders',(req,res) => {
-  //console.log(req.body)
+  console.log(req.body)
   let orderObj = req.body
-  //console.log('user')
+  console.log('user', req.user)
   orderObj.details.user = ifExsistElse(req.user,{id:0}) //TODO
   let order = new Order(orderObj)
   order.writeToSql(writeSql).then(result=>{
@@ -218,7 +221,6 @@ app.get('/api/books',(req,res) => {
 
 app.get('/api/users',(req,res) => {
   let sql =`select * from users`
-  console.log(sql)
   sendSql(res, sql)
 });
 
@@ -240,7 +242,6 @@ app.get('/api/addresses', (req,res) => {
 });
 
 app.post('/api/addresses', (req,res) => {
-  console.log(req.body)
   const { ad_name, ad_address1, ad_city, ad_postalCode } = req.body;
   const sql = `INSERT INTO address (ad_name, ad_address1, ad_city, ad_postalCode)
     VALUES ("${ad_name}","${ad_address1}","${ad_city}","${ad_postalCode}")`;
@@ -262,7 +263,6 @@ app.get('/api/warehouses', (req,res) => {
 });
 
 app.get('/api/stores',(req,res) => {
-  console.log('w api stores')
   let sql =`SELECT  st_ID id,  st_name 'name',  st_shortName 'shortName',  st_addressID 'addressID',  st_warehouseID 'warehouseID' FROM  store`
   return sendSql(res, sql)
 });

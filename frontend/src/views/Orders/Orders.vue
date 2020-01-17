@@ -2,12 +2,23 @@
 <v-card
     class="mx-2"
   >
-  <v-card-title>Lista zamówień</v-card-title>
+  <v-card-title>Lista zamówień
+    <v-spacer></v-spacer>
+                    <v-text-field
+                      v-model="search"
+                      append-icon="mdi-search"
+                      label="Search"
+                      single-line
+                      hide-details
+                    ></v-text-field>
+  </v-card-title>
     <v-card-text class="text--primary">
+      
 <v-data-table
     v-if="renderComponent"
     :headers="headers"
     :items="orders"
+    :search="search"
     class="elevation-1"
   >
   <template v-slot:item.details.customerID="{ item }">
@@ -35,6 +46,7 @@ import OrderShow from '@/components/Orders/OrderShow'
           OrderShow,
       },
       data: () => ({
+      search: '',
       renderComponent:true,
       headers: [
         { text: 'Id',value: 'details.id' },

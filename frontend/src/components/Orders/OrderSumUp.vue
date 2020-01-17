@@ -1,6 +1,7 @@
 <template>
 
 <v-card
+  v-if="sale"
     class="mx-2"
   >
   <v-card-title > Podsumowanie zamówienia </v-card-title>
@@ -38,6 +39,7 @@
           renderComponent: true
         }
       },
+      props:['sale'],
       computed:{
         actualOrder(){
           return this.$store.getters.actualOrder;

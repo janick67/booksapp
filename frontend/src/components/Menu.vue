@@ -19,7 +19,7 @@
           active-class="notBackground"
           text
           elevation="4"
-          @click="onLogout">
+          to="/logout">
           <v-icon left dark>mdi-exit-to-app</v-icon>
           Wyloguj
         </v-btn>
@@ -75,35 +75,7 @@
     </v-navigation-drawer>
 
   </div>
-    <!-- <div>
-    <v-toolbar class="primary" dark>
-      <v-toolbar-title>
-        <v-btn class="primary" to="/">Wydatki</v-btn>
-      </v-toolbar-title>
 
-      <div class="flex-grow-1"></div>
-
-      <v-toolbar-items>
-        <v-btn
-          class="primary"
-          v-for="item in menuItems"
-          :key="item.title"
-          :to="item.link">
-          <v-icon left dark>{{ item.icon }}</v-icon>
-          {{ item.title }}
-
-        </v-btn>
-
-        <v-btn
-          class="primary"
-          v-if="userIsAuthenticated"
-          @click="onLogout">
-          <v-icon left dark>mdi-exit-to-app</v-icon>
-          logout
-        </v-btn>
-      </v-toolbar-items>
-    </v-toolbar>
-  </div> -->
 </template>
 
 <script>
@@ -133,11 +105,6 @@ export default {
       return this.$store.getters.user !== null && this.$store.getters.user !== undefined
     }
   },
-  methods: {
-    onLogout () {
-      this.$store.dispatch('logout',this.$router)
-    }
-  }
 }
 </script>
 
