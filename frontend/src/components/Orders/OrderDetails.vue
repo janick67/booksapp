@@ -179,8 +179,7 @@ export default {
       })
     },
     autoAddress () {
-      if (this.sale) return this.address
-      console.log(this.addresses, this.store.addressID)
+      if (this.sale && this.deliveryType === 'Kurier') return this.address
       if (this.store != null && this.addresses != null) {
         let storeAddress = this.addresses.find(el => el.id = this.store.addressID)
         if (typeof storeAddress !== 'undefined') { return storeAddress }

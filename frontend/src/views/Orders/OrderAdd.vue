@@ -58,7 +58,7 @@ export default {
     response (value) {
       console.log('odp.:', this.response)
       if (this.response !== null && this.response !== undefined && this.response.id !== undefined) {
-        if (this.response.id !== null) this.$router.push('/orders')
+        if (this.response.id !== null) this.$router.push('/orders/list')
       }
     }
   },
