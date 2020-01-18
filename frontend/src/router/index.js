@@ -6,6 +6,7 @@ import Orders from '@/views/Orders/Orders.vue'
 import OrderAdd from '@/views/Orders/OrderAdd.vue'
 import UserAdd from '@/views/Admin/UserAdd.vue'
 import Logout from '@/views/Logout.vue'
+import Warehouse from '@/views/Warehouses/Warehouse.vue'
 import store from '@/store.js'
 
 Vue.use(Router)
@@ -42,6 +43,15 @@ let router = new Router({
       path: '/users/add',
       name: 'Dodaj użytkownika',
       component: UserAdd,
+      meta: { 
+        requiresAuth: true,
+        is_admin : true
+      }
+    },
+    {
+      path: '/warehouse',
+      name: 'Magazyn',
+      component: Warehouse,
       meta: { 
         requiresAuth: true,
         is_admin : true

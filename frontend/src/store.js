@@ -14,6 +14,7 @@ export default new Vuex.Store({
     customers: [],
     addresses: [],
     warehouses: [],
+    warehousesbooks: [],
     stores: [],
     actualOrder: {},
     actualUser: {},
@@ -49,6 +50,9 @@ export default new Vuex.Store({
     },
     setLoadedWarehouses (state, payload) {
       state.warehouses = payload
+    },
+    setLoadedWarehousesBooks (state, payload) {
+      state.warehousesbooks = payload
     },
     setLoadedStores (state, payload) {
       state.stores = payload
@@ -172,6 +176,14 @@ export default new Vuex.Store({
       fetch('/api/warehouses').then(res => res.json()).then((res) => {
         if (res.error == '401') {commit('setUser',null);     return console.log('zaloguj się ponownie')}
         commit('setLoadedWarehouses', res.res)
+        commit('setLoading', false)
+      })
+    },
+    loadWarehousesBooks ({ commit }) {
+      commit('setLoading', true)
+      fetch('/api/warehousesBooks').then(res => res.json()).then((res) => {
+        if (res.error == '401') {commit('setUser',null);     return console.log('zaloguj się ponownie')}
+        commit('setLoadedWarehousesBooks', res.res)
         commit('setLoading', false)
       })
     },
@@ -352,6 +364,9 @@ export default new Vuex.Store({
     },
     warehouses (state) {
       return state.warehouses
+    },
+    warehousesBooks (state) {
+      return state.warehousesbooks
     },
     actualOrder (state) {
       return state.actualOrder

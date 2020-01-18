@@ -283,8 +283,12 @@ app.post('/api/shipmentStatus', (req,res) => {
 });
 
 app.get('/api/warehouses', (req,res) => {
-  let sql =`SELECT wa_ID id,wa_code code, ad.ad_city city FROM warehouses wa
+  let sql =`SELECT wa_id id ,wa_code code, ad.ad_city city FROM warehouses wa
   join address ad on wa.wa_addressID = ad.ad_id`
+  return sendSql(res, sql)
+});
+app.get('/api/warehousesBooks', (req,res) => {
+  let sql =`SELECT bk.bo_title title ,wb_count count FROM warehouse_books wa join books bk on wa.wb_warehouseID = bk.bo_ID`
   return sendSql(res, sql)
 });
 
