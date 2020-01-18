@@ -323,7 +323,7 @@ function sendSql(res,sql)
   return new Promise(function(resolve, reject) {
     const query = db.query(sql, (err, result) => {
       if (err){console.error(err); reject(err);  return res.send({error:err,res:null})};
-      //console.log(result);
+      console.log(result);
       resolve(result)
       return res.send({err:null,res:result});
     });

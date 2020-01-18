@@ -58,14 +58,9 @@ export default {
   },
   created() {
     this.$store.dispatch('loadWarehouses');
-     this.$store.dispatch('loadBooks');
+    this.$store.dispatch('loadWarehousesBooks');
   },
   methods: {
-    deleteItem(item) {
-      const index = this.users.indexOf(item);
-      this.users.splice(index, 1);
-      
-    },
     forceRerender() {
       // Remove my-component from the DOM
       this.renderComponent = false;
