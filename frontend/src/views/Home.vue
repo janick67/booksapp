@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    
+    Witaj {{user.login}}!
   </v-card>
 </template>
 
@@ -14,6 +14,9 @@ export default {
     }
   },
   computed: {
+    user () {
+      return this.$store.getters.user
+    }
   }
 }
 </script>

@@ -1,10 +1,12 @@
 <template>
   <v-container>
-    <!-- <v-layout row v-if="error">
+    <v-layout row v-if="error">
       <v-flex xs12 sm6 offset-sm3>
-        <app-alert @dismissed="onDismissed" :text="error.message"></app-alert>
+        <v-alert type="error">
+        {{error.message}}
+      </v-alert>
       </v-flex>
-    </v-layout> -->
+    </v-layout>
     <v-layout row>
       <v-flex xs12 sm6 offset-sm3>
         <v-card>
@@ -81,9 +83,6 @@ export default {
     onSignin () {
       this.$store.dispatch('signUserIn', { username: this.username, password: this.password })
     },
-    onDismissed () {
-      this.$store.dispatch('clearError')
-    }
   }
 }
 </script>

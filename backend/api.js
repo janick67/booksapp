@@ -148,7 +148,7 @@ app.post('/signin', (req, res, next) => {
   if (debugauth) console.log('Inside the new POST /login callback')
   passport.authenticate('local', (err, user, info) => {
     if (debugauth) console.log("(err, user, info)",err, user, info);
-    if (err || !user) return res.send({error:"Nie udało się uwierzytelnic",res:null});
+    if (err || !user) return res.send({error:{message:"Nie udało się uwierzytelnic"},res:null});
     if (debugauth) console.log('Inside passport.authenticate() callback');
     if (debugauth) console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
     if (debugauth) console.error(`req.user: ${JSON.stringify(req.user)}`)
@@ -187,10 +187,10 @@ app.get('/api/orders', (req,res) => {
   let sql =`select * from orders`
   loadOrdersFromSql()
   .then(orders =>{
-    res.send({err:null,res:orders});
+    res.send({error:null,res:orders});
   })
   .catch(error =>{
-    res.send({err:error,res:null});
+    res.send({error:error,res:null});
   });
   // console.log(sql)
   // sendSql(res, sql)
@@ -205,7 +205,7 @@ app.post('/api/orders',(req,res) => {
   orderObj.details.user = ifExsistElse(req.user,{id:0}) //TODO
   let order = new Order(orderObj)
   order.writeToSql(writeSql).then(result=>{
-    return res.send({err:null,res:result});
+    return res.send({error:null,res:result});
   }).catch(err=>{return res.send({error:err,res:null})});
   orders.push(order)
   return 0;
@@ -321,7 +321,7 @@ function sendSql(res,sql)
       if (err){console.error(err); reject(err);  return res.send({error:err,res:null})};
       //console.log(result);
       resolve(result)
-      return res.send({err:null,res:result});
+      return res.send({error:null,res:result});
     });
   })
 }
