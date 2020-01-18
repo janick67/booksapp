@@ -31,8 +31,8 @@ class Order {
 
   writeToSql(writeSql){
     return new Promise(async (resolve, reject) => {
-      if (this.sourceWarehouseID == null) { console.error('nie podano magazynu źródłowego'); return -1; }
-      if (this.customerID == null && this.targetWarehouseID == null) { console.error('nie podano magazynu docelowego ani kontrahenta'); return -1; }
+      if (this.sourceWarehouseID == null) {  reject({message:'nie podano magazynu źródłowego'}); return -1; }
+      if (this.customerID == null && this.targetWarehouseID == null) { reject({message:'nie podano magazynu docelowego ani kontrahenta'}); return -1; }
 
       let sqlOrder = `INSERT INTO orders(or_customerID, or_sourceWarehouseID, or_targetWarehouseID, or_status, or_addressID, or_shipmentID, or_storeID, or_creatorID, or_modID, or_comment,or_sumGross)
                   VALUES (${this.customerID},${this.sourceWarehouseID},${this.targetWarehouseID}, ${this.status}, ${this.addressID}, ${this.shipmentID}, ${this.storeID}, ${this.userID}, ${this.userID}, "",${this.sumGross})`

@@ -185,7 +185,7 @@ app.get('/logout', (req, res) => {
 
 app.get('/api/orders', (req,res) => {
   let sql =`select * from orders`
-  loadOrdersFromSql()
+  loadOrdersFromSql(req.user)
   .then(orders =>{
     res.send({error:null,res:orders});
   })
@@ -205,6 +205,7 @@ app.post('/api/orders',(req,res) => {
   orderObj.details.user = ifExsistElse(req.user,{id:0}) //TODO
   let order = new Order(orderObj)
   order.writeToSql(writeSql).then(result=>{
+    console.log('Kończę wysyłać')
     return res.send({error:null,res:result});
   }).catch(err=>{return res.send({error:err,res:null})});
   orders.push(order)
@@ -326,10 +327,11 @@ function sendSql(res,sql)
   })
 }
 
-function loadOrdersFromSql(id){
+function loadOrdersFromSql(user){
   return new Promise((resolve,reject)=>{
     let where = '';
-    if (typeof id != 'undefined'){ where = `where or_id = '${id}'`}
+    console.log(user)
+    if (typeof user != 'undefined'){ where = `where or_storeID = '${user.storeID}'`}
     let sql = `select * from orders
                join order_books on or_id = ob_orderid
                ${where}`;

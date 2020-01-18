@@ -18,48 +18,48 @@ let router = new Router({
       path: '/',
       name: 'home',
       component: Home,
-      meta: { 
-        requiresAuth: true,
+      meta: {
+        requiresAuth: true
       }
     },
     {
-      path: '/orders',
+      path: '/orders/list',
       name: 'Lista zamówień',
       component: Orders,
-      meta: { 
-        requiresAuth: true,
+      meta: {
+        requiresAuth: true
       }
     },
     {
       path: '/orders/add',
       name: 'Dodaj zamówienie',
       component: OrderAdd,
-      meta: { 
-        requiresAuth: true,
+      meta: {
+        requiresAuth: true
       }
     },
     {
       path: '/users/add',
       name: 'Dodaj użytkownika',
       component: UserAdd,
-      meta: { 
+      meta: {
         requiresAuth: true,
-        is_admin : true
+        is_admin: true
       }
     },
     {
       path: '/signin',
       name: 'Signin',
       component: Signin,
-      meta: { 
-        guest: true,
+      meta: {
+        guest: true
       }
     },
     {
       path: '/logout',
       name: 'Logout',
       component: Logout,
-      meta: { 
+      meta: {
         requiresAuth: true
       }
     }
@@ -67,34 +67,33 @@ let router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
-  if(to.matched.some(record => record.meta.requiresAuth)) {
-      if (store.getters.user == null) {
-          next({
-              path: '/signin',
-              params: { nextUrl: to.fullPath }
-          })
-      } else {
-          let user = store.getters.user
-          if(to.matched.some(record => record.meta.is_admin)) {
-              if(user.roleID == 1){
-                  next()
-              }
-              else{
-                  next({ path: '/'})
-              }
-          }else {
-              next()
-          }
-      }
-  } else if(to.matched.some(record => record.meta.guest)) {
-      if(store.getters.user == null){
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (store.getters.user == null) {
+      next({
+        path: '/signin',
+        params: { nextUrl: to.fullPath }
+      })
+    } else {
+      let user = store.getters.user
+      if (to.matched.some(record => record.meta.is_admin)) {
+        if (user.roleID == 1) {
           next()
-      }else{
+        } else {
           next({ path: '/' })
+        }
+      } else {
+        next()
       }
-  }else {
-      next() 
+    }
+  } else if (to.matched.some(record => record.meta.guest)) {
+    if (store.getters.user == null) {
+      next()
+    } else {
+      next({ path: '/' })
+    }
+  } else {
+    next()
   }
 })
 
-export default router;
+export default router

@@ -92,19 +92,37 @@ export default {
         { icon: 'mdi-lock-open-variant', text: 'Zaloguj', link: '/signin' }
       ]
       if (this.userIsAuthenticated) {
-        menuItems = [
-          { icon: 'mdi-bank-transfer', text: 'Dodaj zamówienie', link: '/orders/add' },
-          { icon: 'mdi-bank-transfer', text: 'Lista zamówień', link: '/orders' },
-           { icon: 'mdi-bank-transfer', text: 'Dodaj użytkownika', link: '/users/add' },
-          { icon: 'mdi-exit-to-app', text: 'Wyloguj', link: '/logout' }
-        ]
+        if (this.user.roleID === 1) { // role: 1 - admin, 2 - centrala, 3 - filia
+          menuItems = [
+            { icon: 'mdi-bank-transfer', text: 'Dodaj zamówienie', link: '/orders/add' },
+            { icon: 'mdi-bank-transfer', text: 'Lista zamówień', link: '/orders/list' },
+            { icon: 'mdi-bank-transfer', text: 'Lista użytkowników', link: '/users/add' },
+            { icon: 'mdi-exit-to-app', text: 'Wyloguj', link: '/logout' }
+          ]
+        } else if (this.user.role === 2) { // role: 1 - admin, 2 - centrala, 3 - filia
+          menuItems = [
+            { icon: 'mdi-bank-transfer', text: 'Dodaj zamówienie', link: '/orders/add' },
+            { icon: 'mdi-bank-transfer', text: 'Lista zamówień', link: '/orders/list' },
+            { icon: 'mdi-bank-transfer', text: 'Lista użytkowników', link: '/users/add' },
+            { icon: 'mdi-exit-to-app', text: 'Wyloguj', link: '/logout' }
+          ]
+        } else {
+          menuItems = [
+            { icon: 'mdi-bank-transfer', text: 'Dodaj zamówienie', link: '/orders/add' },
+            { icon: 'mdi-bank-transfer', text: 'Lista zamówień', link: '/orders/list' },
+            { icon: 'mdi-exit-to-app', text: 'Wyloguj', link: '/logout' }
+          ]
+        }
       }
       return menuItems
     },
     userIsAuthenticated () {
       return this.$store.getters.user !== null && this.$store.getters.user !== undefined
+    },
+    user () {
+      return this.$store.getters.user
     }
-  },
+  }
 }
 </script>
 
