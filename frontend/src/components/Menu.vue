@@ -97,12 +97,14 @@ export default {
             { icon: 'mdi-bank-transfer', text: 'Dodaj zamówienie', link: '/orders/add' },
             { icon: 'mdi-bank-transfer', text: 'Lista zamówień', link: '/orders/list' },
             { icon: 'mdi-bank-transfer', text: 'Lista użytkowników', link: '/users/add' },
+            { icon: 'mdi-bank-transfer', text: 'Magazyn', link: '/warehouse' },
             { icon: 'mdi-exit-to-app', text: 'Wyloguj', link: '/logout' }
           ]
         } else if (this.user.role === 2) { // role: 1 - admin, 2 - centrala, 3 - filia
           menuItems = [
             { icon: 'mdi-bank-transfer', text: 'Dodaj zamówienie', link: '/orders/add' },
             { icon: 'mdi-bank-transfer', text: 'Lista zamówień', link: '/orders/list' },
+            { icon: 'mdi-bank-transfer', text: 'Magazyn', link: '/warehouse' },
             { icon: 'mdi-bank-transfer', text: 'Lista użytkowników', link: '/users/add' },
             { icon: 'mdi-exit-to-app', text: 'Wyloguj', link: '/logout' }
           ]

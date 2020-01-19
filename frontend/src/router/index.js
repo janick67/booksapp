@@ -6,6 +6,7 @@ import Orders from '@/views/Orders/Orders.vue'
 import OrderAdd from '@/views/Orders/OrderAdd.vue'
 import UserAdd from '@/views/Admin/UserAdd.vue'
 import Logout from '@/views/Logout.vue'
+import Warehouse from '@/views/Warehouses/Warehouse.vue'
 import store from '@/store.js'
 
 Vue.use(Router)
@@ -18,24 +19,32 @@ let router = new Router({
       path: '/',
       name: 'home',
       component: Home,
-      meta: {
-        requiresAuth: true
+      meta: { 
+        requiresAuth: true,
       }
     },
     {
       path: '/orders/list',
       name: 'Lista zamówień',
       component: Orders,
-      meta: {
-        requiresAuth: true
+      meta: { 
+        requiresAuth: true,
+      }
+    },
+    {
+      path: '/Warehouse',
+      name: 'Lista magazynów',
+      component: Warehouse,
+      meta: { 
+        requiresAuth: true,
       }
     },
     {
       path: '/orders/add',
       name: 'Dodaj zamówienie',
       component: OrderAdd,
-      meta: {
-        requiresAuth: true
+      meta: { 
+        requiresAuth: true,
       }
     },
     {

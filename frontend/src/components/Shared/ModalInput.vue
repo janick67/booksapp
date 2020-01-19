@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" max-width="250">
     <template v-slot:activator="{ on }">
-      <v-btn color="primary" dark class="mb-5" v-on="on">{{btnText}}</v-btn>
+      <v-btn @click="addAddress" color="primary" dark class="mb-5" v-on="on">{{btnText}}</v-btn>
     </template>
     <template>
       <v-card>
@@ -11,10 +11,11 @@
         </v-card-title>
         <v-card-title>
           <template>
-            <v-form ref="form"  lazy-validation>
+            <v-form ref="form" v-model="valid" lazy-validation>
               <v-text-field
                 v-model="nameValue"
                 :counter="25"
+                :rules="nameRules"
                 label="Miejsce"
                 required
               ></v-text-field>
@@ -22,12 +23,14 @@
               <v-text-field
                 v-model="addressValue"
                 :counter="25"
+                :rules="nameRules"
                 label="Adres"
                 required
               ></v-text-field>
               <v-text-field
                 v-model="cityValue"
                 :counter="25"
+                :rules="nameRules"
                 label="Miasto"
                 required
               ></v-text-field>
