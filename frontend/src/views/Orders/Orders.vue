@@ -22,10 +22,10 @@
           <OrderShow :order="item" />
         </template>
         <template v-slot:item.action1 ="{ item }">
-          <TrackingNumber :order="item" />
+          <TrackingNumber v-if="item.details.status<3" :order="item" />
         </template>
         <template v-slot:item.action2="{ item }">
-          <OrderComplete :order="item" />
+          <OrderComplete v-if="item.details.status===3"  :order="item" />
         </template>
       </v-data-table>
     </v-card-text>
