@@ -184,6 +184,7 @@ export default new Vuex.Store({
     },
     clearAOResponseCreateOrder ({ commit }) {
       commit('clearAOResponseCreateOrder')
+    },
     loadWarehousesBooks ({ commit }) {
       commit('setLoading', true)
       fetch('/api/warehousesBooks').then(res => res.json()).then((res) => {
